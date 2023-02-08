@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import Link from 'next/link'
 import { createStyles, Group, useMantineColorScheme, Navbar } from '@mantine/core';
 import {
   IconSwitchHorizontal,
@@ -94,22 +95,22 @@ export default function NavbarSimpleColored(opened: Props) {
   // const dark = colorScheme === 'dark';
 
   const links = data.map((item) => (
-    <a
+    <Link
       className={cx(classes.link, { [classes.linkActive]: item.label === active })}
       href={item.link}
       key={item.label}
       onClick={(event) => {
-        event.preventDefault();
+        // event.preventDefault();
         setActive(item.label);
       }}
     >
       <item.icon className={classes.linkIcon} stroke={1.5} />
       <span>{item.label}</span>
-    </a>
+    </Link>
   ));
 
   return (
-    <Navbar height={700} width={{ sm: 200, lg: 300 }} hidden={!opened} p="md" className={classes.navbar}>
+    <Navbar height={670} width={{ sm: 200, lg: 300 }} hidden={!opened} p="md" className={classes.navbar}>
       <Navbar.Section grow>
         <Group className={classes.header} position="apart">
           {/* <MantineLogo size={28} inverted /> */}
