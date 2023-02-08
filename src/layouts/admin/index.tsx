@@ -1,11 +1,26 @@
 import { useState } from 'react';
 import { AppShell, useMantineTheme } from '@mantine/core';
-import Header from './Header';
-import Navbar from './Navbar';
+import Header from '../components/Header';
+import Navbar from '../components/Navbar';
+import { Menu_Item } from '../components/Navbar/links';
 
 interface Props {
   children: React.ReactNode
 }
+
+import {
+  IconFiles,
+  IconSettings,
+  IconUser,
+} from '@tabler/icons';
+
+export const data: Array<Menu_Item> = [
+  { link: '/profile', label: 'My Profile', icon: IconUser },
+  { link: '/records', label: 'My Medical Records', icon: IconFiles },
+  { link: '/settings', label: 'Settings', icon: IconSettings },
+];
+
+
 export default function AdminLayout({ children }: Props) {
   const theme = useMantineTheme();
   const [opened, setOpened] = useState<boolean>(false);
@@ -19,7 +34,7 @@ export default function AdminLayout({ children }: Props) {
         },
       }}
       navbarOffsetBreakpoint="sm"
-      navbar={<Navbar opened={opened} />}
+      navbar={<Navbar data={data} opened={opened} />}
       header={<Header opened={opened} setOpened={setOpened}/>}
     >
       {children}

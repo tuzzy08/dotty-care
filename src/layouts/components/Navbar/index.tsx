@@ -6,7 +6,7 @@ import {
   IconLogout,
 } from '@tabler/icons';
 // import { IconSun, IconMoonStars } from '@tabler/icons';
-import { data } from './links';
+import { Menu_Item } from './links';
 
 const useStyles = createStyles((theme, _params, getRef) => {
   const icon = getRef('icon');
@@ -85,10 +85,11 @@ const useStyles = createStyles((theme, _params, getRef) => {
 
 interface Props {
   // children: React.ReactNode;
-  opened: boolean
+  opened: boolean,
+  data: Array<Menu_Item>,
 }
 
-export default function NavbarSimpleColored(opened: Props) {
+export default function NavbarSimpleColored({ opened, data }: Props) {
   const { classes, cx } = useStyles();
   const [active, setActive] = useState('Billing');
   const { colorScheme, toggleColorScheme } = useMantineColorScheme();
