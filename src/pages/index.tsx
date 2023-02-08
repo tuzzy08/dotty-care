@@ -11,7 +11,7 @@ IndexPage.getLayout = function getLayout(page: any) {
 export default function IndexPage() {
   return (
     // <Group mt={50} position="apart">
-      <Button size="xl">Welcome to Mantine!</Button>
+      <Button size="xl">Welcome</Button>
       // <Logout />
     // </Group>
   );
