@@ -2,16 +2,16 @@
 import { Button, Group } from "@mantine/core";
 // import {Logout} from '../components';
 
-import {Layout} from '../layouts'
+import {Layout} from '../../../layouts'
 
-ProfilePage.getLayout = function getLayout(page: any) {
-  return <Layout variant={'admin'}>{page}</Layout>
+SettingsPage.getLayout = function getLayout(page: any) {
+  return <Layout variant={'user'}>{page}</Layout>
 }
 
-export default function ProfilePage() {
+export default function SettingsPage() {
   return (
     // <Group mt={50} position="apart">
-      <Button size="xl">Profile</Button>
+      <Button size="xl">Settings</Button>
       // <Logout />
     // </Group>
   );

@@ -2,10 +2,10 @@
 import { Button, Group } from "@mantine/core";
 // import {Logout} from '../components';
 
-import {Layout} from '../layouts'
+import {Layout} from '../../../layouts'
 
 IndexPage.getLayout = function getLayout(page: any) {
-  return <Layout variant={'admin'}>{page}</Layout>
+  return <Layout variant={'user'}>{page}</Layout>
 }
 
 export default function IndexPage() {

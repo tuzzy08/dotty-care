@@ -15,9 +15,9 @@ import {
 } from '@tabler/icons';
 
 export const data: Array<Menu_Item> = [
-  { link: '/profile', label: 'My Profile', icon: IconUser },
-  { link: '/records', label: 'My Medical Records', icon: IconFiles },
-  { link: '/settings', label: 'Settings', icon: IconSettings },
+  { link: '/dashboard/users/profile', label: 'My Profile', icon: IconUser },
+  { link: '/dashboard/users/records', label: 'My Medical Records', icon: IconFiles },
+  { link: '/dashboard/users/settings', label: 'Settings', icon: IconSettings },
 ];
 
 
