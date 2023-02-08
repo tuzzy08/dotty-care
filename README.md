@@ -1,8 +1,15 @@
 This is a project that manages access to a patient's medical records in emergency situations.
 
 ## Getting Started
+First install dependencies by running 
 
-First, run the development server:
+```bash
+npm install 
+# or
+yarn install
+```
+
+Secondly, run the development server:
 
 ```bash
 npm run dev
