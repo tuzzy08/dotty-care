@@ -1,12 +1,13 @@
 import { useState } from 'react';
 import Link from 'next/link'
-import { createStyles, Group, useMantineColorScheme, Navbar } from '@mantine/core';
+import { createStyles, Group, Navbar } from '@mantine/core';
 import {
   IconSwitchHorizontal,
   IconLogout,
 } from '@tabler/icons';
 // import { IconSun, IconMoonStars } from '@tabler/icons';
 import { Menu_Item } from './links';
+import { useAuth } from '../../../lib/auth'
 
 const useStyles = createStyles((theme, _params, getRef) => {
   const icon = getRef('icon');
@@ -92,8 +93,7 @@ interface Props {
 export default function NavbarSimpleColored({ opened, data }: Props) {
   const { classes, cx } = useStyles();
   const [active, setActive] = useState('Billing');
-  const { colorScheme, toggleColorScheme } = useMantineColorScheme();
-  // const dark = colorScheme === 'dark';
+  const { signOut } = useAuth();
 
   const links = data.map((item) => (
     <Link
@@ -125,7 +125,7 @@ export default function NavbarSimpleColored({ opened, data }: Props) {
           <span>Change account</span>
         </a> */}
 
-        <a href="#" className={classes.link} onClick={(event) => event.preventDefault()}>
+        <a className={classes.link} onClick={signOut}>
           <IconLogout className={classes.linkIcon} stroke={1.5} />
           <span>Logout</span>
         </a>

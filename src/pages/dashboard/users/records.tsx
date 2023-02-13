@@ -1,6 +1,6 @@
-// import { withPageAuthRequired } from '@auth0/nextjs-auth0'
+import { createServerSupabaseClient } from '@supabase/auth-helpers-nextjs'
+import { GetServerSidePropsContext } from 'next';
 import { Button, Group } from "@mantine/core";
-// import {Logout} from '../components';
 
 import {Layout} from '../../../layouts'
 
@@ -17,5 +17,29 @@ export default function RecordsPage() {
   );
 }
 
-// IndexPage.requireAuth = true;
-// export const getServerSideProps = withPageAuthRequired()
+export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
+  // Create authenticated Supabase Client
+  const supabase = createServerSupabaseClient(ctx)
+  // Check if we have a session
+  const {
+    data: { session },
+  } = await supabase.auth.getSession()
+
+  console.log('user session')
+  console.log(session)
+
+  if (!session || session.user.user_metadata.accountType !== 'Patient')
+    return {
+      redirect: {
+        destination: '/',
+        permanent: false,
+      },
+    }
+
+  return {
+    props: {
+      initialSession: session,
+      user: session.user,
+    },
+  }
+}

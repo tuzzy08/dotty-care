@@ -3,13 +3,13 @@ import { Button, Group } from "@mantine/core";
 import { GetServerSidePropsContext } from 'next';
 import {Layout} from '../../../layouts'
 
-IndexPage.getLayout = function getLayout(page: any) {
+EventsPage.getLayout = function getLayout(page: any) {
   return <Layout variant={'ems'}>{page}</Layout>
 }
 
-export default function IndexPage() {
+export default function EventsPage() {
   return (
-      <Button size="xl">Home</Button>
+      <Button size="xl">Events</Button>
   );
 }
 

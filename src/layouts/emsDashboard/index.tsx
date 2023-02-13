@@ -9,19 +9,21 @@ interface Props {
 }
 
 import {
-  IconReportMedical,
+  IconHome,
+  IconActivityHeartbeat,
   IconSettings,
-  IconUser,
+  IconUsers,
+  IconReportMedical
 } from '@tabler/icons';
 
 export const data: Array<Menu_Item> = [
-  { link: '/dashboard/users/profile', label: 'My Profile', icon: IconUser },
-  { link: '/dashboard/users/records', label: 'My Medical Records', icon: IconReportMedical },
-  { link: '/dashboard/users/settings', label: 'Settings', icon: IconSettings },
+  { link: '/dashboard/ems', label: 'Home', icon: IconHome },
+  { link: '/dashboard/ems/events', label: 'Emergency Events', icon: IconActivityHeartbeat },
+  { link: '/dashboard/ems/settings', label: 'Settings', icon: IconSettings },
 ];
 
 
-export default function AdminLayout({ children }: Props) {
+export default function EmsLayout({ children }: Props) {
   const theme = useMantineTheme();
   const [opened, setOpened] = useState<boolean>(false);
   return (
