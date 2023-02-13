@@ -1,7 +1,7 @@
 import { createServerSupabaseClient } from '@supabase/auth-helpers-nextjs'
 import { Button, Group } from "@mantine/core";
 import { GetServerSidePropsContext } from 'next';
-import {Layout} from '../../../layouts'
+import {Layout} from '../../../../layouts'
 
 EventsPage.getLayout = function getLayout(page: any) {
   return <Layout variant={'ems'}>{page}</Layout>

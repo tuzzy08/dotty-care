@@ -12,12 +12,14 @@ import {
   IconHome,
   IconActivityHeartbeat,
   IconSettings,
+  IconFilePlus,
   IconUsers,
   IconReportMedical
 } from '@tabler/icons';
 
 export const data: Array<Menu_Item> = [
   { link: '/dashboard/ems', label: 'Home', icon: IconHome },
+  { link: '/dashboard/ems/events/new', label: 'New Event', icon: IconFilePlus },
   { link: '/dashboard/ems/events', label: 'Emergency Events', icon: IconActivityHeartbeat },
   { link: '/dashboard/ems/settings', label: 'Settings', icon: IconSettings },
 ];
