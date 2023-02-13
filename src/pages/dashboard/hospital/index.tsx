@@ -4,7 +4,7 @@ import { GetServerSidePropsContext } from 'next';
 import {Layout} from '../../../layouts'
 
 IndexPage.getLayout = function getLayout(page: any) {
-  return <Layout variant={'hospitals'}>{page}</Layout>
+  return <Layout variant={'hospital'}>{page}</Layout>
 }
 
 export default function IndexPage() {
@@ -21,7 +21,7 @@ export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
     data: { session },
   } = await supabase.auth.getSession()
 
-  if (!session)
+  if (!session || session.user.user_metadata.accountType !== 'Hospital')
     return {
       redirect: {
         destination: '/',

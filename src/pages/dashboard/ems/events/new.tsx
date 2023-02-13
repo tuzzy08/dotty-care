@@ -1,6 +1,8 @@
+import { useState, useMemo } from 'react';
+import dynamic from "next/dynamic";
 import { createServerSupabaseClient } from '@supabase/auth-helpers-nextjs'
 import { Button, Group, Text } from "@mantine/core";
-import { RichTextEditor } from '@mantine/rte';
+// import { RichTextEditor } from '@mantine/rte';
 import { GetServerSidePropsContext } from 'next';
 import {Layout} from '../../../../layouts'
 
@@ -9,6 +11,12 @@ NewEventPage.getLayout = function getLayout(page: any) {
 }
 
 export default function NewEventPage() {
+  // dynamic import
+  const Rte = useMemo(() => dynamic(() => import('@mantine/rte').then(RichTextEditor => RichTextEditor), {ssr: false}), []);
+  const initialValue =
+  '<p>Create a new  <b>note</b>.</p>';
+  const [value, onChange] = useState(initialValue);
+
   return (
     <>
       <Text
@@ -22,7 +30,7 @@ export default function NewEventPage() {
       >
         Create New Event
       </Text>
-      <RichTextEditor />
+      <Rte value={value} onChange={onChange} />
     </>
   );
 }

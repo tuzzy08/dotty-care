@@ -12,6 +12,8 @@ import {
 } from '@mantine/core';
 import Link from 'next/link'
 import { useForm, SubmitHandler } from "react-hook-form";
+import { createServerSupabaseClient } from '@supabase/auth-helpers-nextjs'
+import { GetServerSidePropsContext } from 'next';
 import { useSupabaseClient, User, useUser } from '@supabase/auth-helpers-react';
 import { useAuth } from '../lib/auth/useAuth';
 
@@ -104,3 +106,30 @@ export default function AuthenticationImage() {
     </div>
   );
 }
+
+// export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
+//   // Create authenticated Supabase Client
+//   const supabase = createServerSupabaseClient(ctx)
+//   // Check if we have a session
+//   const {
+//     data: { session },
+//   } = await supabase.auth.getSession()
+
+//   console.log('user session')
+//   console.log(session)
+
+//   if (!session || session.user.user_metadata.accountType !== 'Patient')
+//     return {
+//       redirect: {
+//         destination: '/',
+//         permanent: false,
+//       },
+//     }
+
+//   return {
+//     props: {
+//       initialSession: session,
+//       user: session.user,
+//     },
+//   }
+// }

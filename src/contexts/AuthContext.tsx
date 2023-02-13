@@ -48,19 +48,20 @@ export function AuthProvider({
     initializeUser();    
 
     const onAuthStateChanged = async () => {
-     const { data: authListener } = await supabase.auth.onAuthStateChange(
-      async (event, session) => {
-        const user = session?.user! ?? null
-        setUserLoading(false)
-        if (user) {
-          setUser(user)
-          setLoggedin(true)
-          router.push(ROUTE_HOME_USERS) // Your users will automatically be redirected to the `/profile` page on logging in
-        } else { // new
-          setUser(null) // new: nullify the user object
-          router.push(ROUTE_AUTH) // new: redirect to the home page
-        }
-      });
+      const accountType: string = user?.user_metadata.accountType;
+      return await supabase.auth.onAuthStateChange(
+        async (event, session) => {
+          const user = session?.user! ?? null
+          setUserLoading(false)
+          if (user) {
+            setUser(user)
+            setLoggedin(true)
+            router.push(`${accountDashboards[accountType as keyof Dashboards]}`) // Your users will automatically be redirected to the `/profile` page on logging in
+          } else { // new
+            setUser(null) // new: nullify the user object
+            router.push(ROUTE_AUTH) // new: redirect to the home page
+          }
+        });
     }
     onAuthStateChanged();
        
