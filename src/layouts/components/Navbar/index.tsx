@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import Link from 'next/link'
-import { createStyles, Group, Navbar } from '@mantine/core';
+import { Button, createStyles, Group, Navbar } from '@mantine/core';
 import {
   IconSwitchHorizontal,
   IconLogout,
@@ -60,6 +60,7 @@ const useStyles = createStyles((theme, _params, getRef) => {
           theme.fn.variant({ variant: 'filled', color: theme.primaryColor }).background!,
           0.1
         ),
+      cursor: 'pointer',
       },
     },
 
@@ -111,7 +112,7 @@ export default function NavbarSimpleColored({ opened, data }: Props) {
   ));
 
   return (
-    <Navbar height={670} width={{ sm: 200, lg: 300 }} hidden={!opened} p="md" className={classes.navbar}>
+    <Navbar width={{ sm: 200, lg: 250 }} hidden={!opened} p="md" className={classes.navbar}>
       <Navbar.Section grow>
         <Group className={classes.header} position="apart">
           {/* <MantineLogo size={28} inverted /> */}
@@ -125,10 +126,10 @@ export default function NavbarSimpleColored({ opened, data }: Props) {
           <span>Change account</span>
         </a> */}
 
-        <a className={classes.link} onClick={signOut}>
+        <Navbar.Section className={classes.link} onClick={signOut}>
           <IconLogout className={classes.linkIcon} stroke={1.5} />
           <span>Logout</span>
-        </a>
+        </Navbar.Section>
       </Navbar.Section>      
       </Navbar>
   );

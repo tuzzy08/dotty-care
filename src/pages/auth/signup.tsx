@@ -17,6 +17,8 @@ import { useAuth } from '../../lib/auth/useAuth';
 type Inputs = {
   email: string,
   password: string,
+  name: string,
+  mobile: string,
   accountType: string
 };
 
@@ -69,7 +71,9 @@ export default function AuthenticationImage() {
           password: form_data.password,
           options: {
           data: {
-            accountType: form_data.accountType
+            accountType: form_data.accountType,
+            name: form_data.name,
+            mobile: form_data.mobile,
           }
     }
         }
@@ -84,6 +88,8 @@ export default function AuthenticationImage() {
         </Title>
         {/* Login Form */}
         <form onSubmit={handleSubmit(handleSignup)}>
+          <TextInput label="Full Name" placeholder="Enter full name" size="md" {...register("name")} />
+          <TextInput label="mobile" placeholder="Enter Mobile no" size="md" {...register("mobile")}/>
           <TextInput label="Email address" placeholder="hello@gmail.com" size="md" {...register("email")}/>
           <PasswordInput label="Password" placeholder="Your password" mt="md" size="md" {...register("password")} />
           <NativeSelect
