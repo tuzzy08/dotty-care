@@ -31,10 +31,10 @@ export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
     data: { session },
   } = await supabase.auth.getSession()
 
-  console.log('user session')
-  console.log(session)
+  // console.log('user session')
+  // console.log(session)
 
-  if (!session || session.user.user_metadata.accountType !== 'Patient')
+  if (!session)
     return {
       redirect: {
         destination: '/',

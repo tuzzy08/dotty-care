@@ -69,14 +69,18 @@ export default function AuthenticationImage() {
   //TODO: USE RIGHT INPUT PROP TYPES
   const { register, handleSubmit, watch, formState: { errors } } = useForm<Inputs>();
   const handleLogin: SubmitHandler<Inputs> = async (form_data) => {
-    console.log(form_data) 
-    if (signIn) {
-        signIn(
-        {
-          email: form_data.email,
-          password: form_data.password,
+    try {
+        console.log(form_data) 
+        if (signIn) {
+           await signIn(
+            {
+              email: form_data.email,
+              password: form_data.password,
+            }
+          )
         }
-      )
+    } catch (error) {
+      console.log(error);
     }
     
   };
