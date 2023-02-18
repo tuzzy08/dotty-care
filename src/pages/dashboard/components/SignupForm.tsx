@@ -77,7 +77,7 @@ export default function SignupForm({ setVisibleForm }) {
 	};
 	const changeForm = () => setVisibleForm('login');
 	return (
-		<Paper className={classes.form} radius={0} p={20}>
+		<Paper className={classes.form} radius={15} p={20}>
 			<Container>
 				<Title
 					order={2}
