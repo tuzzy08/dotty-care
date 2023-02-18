@@ -48,7 +48,7 @@ const useStyles = createStyles((theme) => ({
 	},
 }));
 
-export default function Auth() {
+export default function LoginForm({ setVisibleForm }) {
 	const { classes } = useStyles();
 	const { signIn } = useAuth();
 
@@ -71,6 +71,7 @@ export default function Auth() {
 			console.log(error);
 		}
 	};
+	const changeForm = () => setVisibleForm('signup');
 	return (
 		<Paper className={classes.form} radius={15} p={30}>
 			<Title order={2} className={classes.title} align='center' mt='md' mb={50}>
@@ -99,7 +100,7 @@ export default function Auth() {
 			</form>
 			<Text align='center' mt='md'>
 				Don&apos;t have an account?{' '}
-				<Link href='/auth/signup'>
+				<Link href='' onClick={changeForm}>
 					<Text weight={700}>Register</Text>
 				</Link>
 			</Text>
