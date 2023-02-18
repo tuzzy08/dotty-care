@@ -34,7 +34,8 @@ const useStyles = createStyles((theme) => ({
 		borderRight: `1px solid ${
 			theme.colorScheme === 'dark' ? theme.colors.dark[7] : theme.colors.gray[3]
 		}`,
-		minHeight: '100vh',
+		// minHeight: '100vh',
+		height: 200,
 		maxWidth: 450,
 		paddingTop: 80,
 
@@ -60,13 +61,11 @@ const useStyles = createStyles((theme) => ({
 export default function Auth() {
 	const { classes } = useStyles();
 	const { signIn } = useAuth();
-	const user = useUser();
 
 	//TODO: USE RIGHT INPUT PROP TYPES
 	const {
 		register,
 		handleSubmit,
-		watch,
 		formState: { errors },
 	} = useForm<Inputs>();
 	const handleLogin: SubmitHandler<Inputs> = async (form_data) => {
@@ -125,30 +124,3 @@ export default function Auth() {
 		</div>
 	);
 }
-
-// export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
-//   // Create authenticated Supabase Client
-//   const supabase = createServerSupabaseClient(ctx)
-//   // Check if we have a session
-//   const {
-//     data: { session },
-//   } = await supabase.auth.getSession()
-
-//   console.log('user session')
-//   console.log(session)
-
-//   if (!session || session.user.user_metadata.accountType !== 'Patient')
-//     return {
-//       redirect: {
-//         destination: '/',
-//         permanent: false,
-//       },
-//     }
-
-//   return {
-//     props: {
-//       initialSession: session,
-//       user: session.user,
-//     },
-//   }
-// }
