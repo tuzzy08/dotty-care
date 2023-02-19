@@ -1,4 +1,5 @@
 import {
+	Group,
 	Paper,
 	createStyles,
 	TextInput,
@@ -11,6 +12,7 @@ import {
 	NativeSelect,
 	Center,
 	Container,
+	Box,
 } from '@mantine/core';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import Link from 'next/link';
@@ -90,15 +92,16 @@ export default function SignupForm({ setVisibleForm }) {
 				</Title>
 				{/* Login Form */}
 				<form onSubmit={handleSubmit(handleSignup)}>
+					{/* <Group position='center' dir='column'> */}
 					<TextInput
 						label='Full Name'
-						placeholder='Enter full name'
+						placeholder='First Last Name'
 						size='md'
 						{...register('name')}
 					/>
 					<TextInput
 						label='Mobile'
-						placeholder='Enter Mobile no'
+						placeholder='234 567 7876'
 						size='md'
 						{...register('mobile')}
 					/>
@@ -131,6 +134,7 @@ export default function SignupForm({ setVisibleForm }) {
 					<Button fullWidth mt='xl' size='md' type='submit'>
 						Register
 					</Button>
+					{/* </Group> */}
 				</form>
 				<Text align='center' mt='md'>
 					Have an account?{' '}
