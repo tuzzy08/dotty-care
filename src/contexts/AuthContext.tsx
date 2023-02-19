@@ -53,6 +53,7 @@ export function AuthProvider({ children }) {
 				const path = accountDashboards[accountType as keyof Dashboards];
 				// console.log('path')
 				// console.log(path)
+				// TODO: Get the current path and remain on it if its just a page refresh.
 				path && router.push(path);
 			}
 		};

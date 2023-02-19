@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { createStyles, Table, ScrollArea } from '@mantine/core';
+import { createStyles, Table, ScrollArea, Button } from '@mantine/core';
 
 const useStyles = createStyles((theme) => ({
 	header: {
@@ -41,6 +41,18 @@ export function RecordsTable({ data }: RecordsTableProps) {
 			<td>{row.hospital}</td>
 			<td>{row.doctor_name}</td>
 			<td>{row.date_created}</td>
+			<td>
+				{
+					<Button
+						variant='light'
+						gradient={{ from: 'indigo', to: 'cyan' }}
+						size='xs'
+						radius={10}
+					>
+						view
+					</Button>
+				}
+			</td>
 		</tr>
 	));
 
@@ -55,6 +67,7 @@ export function RecordsTable({ data }: RecordsTableProps) {
 						<th>Hospital Name</th>
 						<th>Date of visit</th>
 						<th>Doctor Name</th>
+						<th>Action</th>
 					</tr>
 				</thead>
 				<tbody>{rows}</tbody>
