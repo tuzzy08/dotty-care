@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { createStyles, Table, ScrollArea, Button } from '@mantine/core';
+import { createStyles, Table, ScrollArea, Button, Modal } from '@mantine/core';
+import { RecordCard } from './RecordCard';
 
 const useStyles = createStyles((theme) => ({
 	header: {
@@ -35,6 +36,7 @@ interface RecordsTableProps {
 export function RecordsTable({ data }: RecordsTableProps) {
 	const { classes, cx } = useStyles();
 	const [scrolled, setScrolled] = useState(false);
+	const [opened, setOpened] = useState(false);
 
 	const rows = data.map((row) => (
 		<tr key={row.hospital}>
@@ -44,10 +46,11 @@ export function RecordsTable({ data }: RecordsTableProps) {
 			<td>
 				{
 					<Button
-						variant='light'
+						variant='outline'
 						gradient={{ from: 'indigo', to: 'cyan' }}
 						size='xs'
 						radius={10}
+						onClick={() => setOpened(true)}
 					>
 						view
 					</Button>
@@ -61,6 +64,9 @@ export function RecordsTable({ data }: RecordsTableProps) {
 			sx={{ height: 300 }}
 			onScrollPositionChange={({ y }) => setScrolled(y !== 0)}
 		>
+			<Modal opened={opened} onClose={() => setOpened(false)} centered>
+				<RecordCard title='Record One' description='Doctors notes here' />
+			</Modal>
 			<Table sx={{ minWidth: 700 }}>
 				<thead className={cx(classes.header, { [classes.scrolled]: scrolled })}>
 					<tr>
