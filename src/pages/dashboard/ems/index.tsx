@@ -2,12 +2,15 @@ import { useState, useMemo } from 'react';
 import dynamic from 'next/dynamic';
 import { createServerSupabaseClient } from '@supabase/auth-helpers-nextjs';
 import {
+	Badge,
 	Box,
 	Button,
 	Card,
 	Center,
+	Checkbox,
 	Flex,
 	Group,
+	Stack,
 	Text,
 	TextInput,
 } from '@mantine/core';
@@ -53,7 +56,7 @@ export default function NewEventPage() {
 
 	return (
 		<>
-			<Flex
+			{/* <Flex
 				// sx={() => ({
 				// 	display: 'flex',
 				// 	flexDirection: 'column',
@@ -65,27 +68,61 @@ export default function NewEventPage() {
 				direction='column'
 				justify={'center'}
 				align={'center'}
+			> */}
+			{/* <Center> */}
+
+			<Card
+				shadow='sm'
+				// style={{ overflow: 'scroll' }}
+				radius={'md'}
+				p='md'
+				w='600px'
+				mah={600}
+				withBorder
+				mt='xs'
 			>
-				{/* <Center> */}
-				<Card shadow='sm' radius={'md'} p='sm'>
-					<form>
-						<TextInput placeholder='Enter patient ID' />
-					</form>
-				</Card>
-				<Text
-					component='span'
-					align='center'
-					variant='gradient'
-					gradient={{ from: 'indigo', to: 'cyan', deg: 45 }}
-					size='xl'
-					weight={700}
-					style={{ fontFamily: 'Greycliff CF, sans-serif' }}
-				>
-					Create New Event
-				</Text>
-				<Rte value={value} onChange={onChange} />
-				{/* </Center> */}
-			</Flex>
+				<Group position='apart' mb='lg'>
+					<Text weight={500}>Create new emergency note</Text>
+					<Badge
+						variant='gradient'
+						gradient={{ from: '#ed6ea0', to: '#ec8c69', deg: 35 }}
+					>
+						Paramedic-ID-Here
+					</Badge>
+				</Group>
+				<form>
+					<Stack align='flex-start'>
+						<TextInput label='Enter patient ID' placeholder='user-5cbda-2345' />
+						<Group
+							sx={(theme) => ({
+								border: `1px solid ${theme.colors.gray[3]}`,
+							})}
+							p='md'
+						>
+							<Checkbox.Group
+								defaultValue={['react']}
+								label='Some options here'
+								// description='This is anonymous'
+								withAsterisk
+							>
+								<Checkbox value='option1' label='Option 1' />
+								<Checkbox value='option2' label='Option 2' />
+								<Checkbox value='option3' label='Option 3' />
+								<Checkbox value='option4' label='Option 4' />
+							</Checkbox.Group>
+						</Group>
+						<Text weight={100}>Enter additional notes</Text>
+						<Box style={{ overflow: 'scroll', maxHeight: 250 }}>
+							<Rte value={value} onChange={onChange} />
+						</Box>
+						<Button variant='outline' mt='sm' size='md' type='submit'>
+							Submit
+						</Button>
+					</Stack>
+				</form>
+			</Card>
+			{/* </Center> */}
+			{/* </Flex> */}
 		</>
 	);
 }
