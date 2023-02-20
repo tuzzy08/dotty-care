@@ -3,19 +3,12 @@ import {
 	createStyles,
 	TextInput,
 	PasswordInput,
-	Checkbox,
-	Container,
 	Button,
 	Title,
 	Text,
-	Anchor,
-	NativeSelect,
 } from '@mantine/core';
 import Link from 'next/link';
 import { useForm, SubmitHandler } from 'react-hook-form';
-import { createServerSupabaseClient } from '@supabase/auth-helpers-nextjs';
-import { GetServerSidePropsContext } from 'next';
-import { useSupabaseClient, User, useUser } from '@supabase/auth-helpers-react';
 import { useAuth } from '../../../lib/auth/useAuth';
 
 type Inputs = {
