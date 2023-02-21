@@ -1,5 +1,4 @@
 import {
-	Group,
 	Paper,
 	createStyles,
 	TextInput,
@@ -8,14 +7,13 @@ import {
 	Button,
 	Title,
 	Text,
-	Anchor,
 	NativeSelect,
-	Center,
 	Container,
-	Box,
 } from '@mantine/core';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import Link from 'next/link';
+import { v4 as uuidv4 } from 'uuid';
+import axios from 'axios';
 import { useAuth } from '../../../lib/auth/useAuth';
 
 type Inputs = {
@@ -25,6 +23,27 @@ type Inputs = {
 	mobile: string;
 	accountType: string;
 };
+
+const idType = {
+	Patient: 'patientID',
+	Hospital: 'hospitalID',
+	Ems: 'paramedicID',
+};
+
+export interface SignupData {
+	email: string;
+	password: string;
+	options: {
+		data: {
+			accountType: string;
+			name: string;
+			mobile: string;
+			patientID?: string;
+			paramedicID?: string;
+			hospitalID?: string;
+		};
+	};
+}
 
 const useStyles = createStyles((theme) => ({
 	form: {
@@ -63,8 +82,9 @@ export default function SignupForm({ setVisibleForm }) {
 	//TODO: USE RIGHT INPUT PROP TYPES
 	const handleSignup: SubmitHandler<Inputs> = async (form_data) => {
 		console.log(form_data);
+		const id = `${uuidv4()}`;
 		if (signUp) {
-			signUp({
+			const signupData: SignupData = {
 				email: form_data.email,
 				password: form_data.password,
 				options: {
@@ -74,7 +94,30 @@ export default function SignupForm({ setVisibleForm }) {
 						mobile: form_data.mobile,
 					},
 				},
-			});
+			};
+
+			if (form_data.accountType === 'Patient') {
+				signupData.options.data.patientID = id;
+			} else if (form_data.accountType === 'Hospital') {
+				signupData.options.data.hospitalID = id;
+			} else if (form_data.accountType === 'Ems') {
+				signupData.options.data.paramedicID = id;
+			}
+			try {
+				const data = await signUp(signupData);
+				if (data && form_data.accountType === 'Patient') {
+					// Call api route to register user
+					const { data } = await axios.post('/api/auth/', {
+						id,
+						fullname: form_data.name,
+						email: form_data.email,
+						password: form_data.password,
+					});
+					console.log(data);
+				}
+			} catch (error) {
+				console.log(error);
+			}
 		}
 	};
 	const changeForm = () => setVisibleForm('login');

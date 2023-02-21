@@ -1,7 +1,12 @@
+import { EventEmitter } from 'events';
 import { createContext, FunctionComponent, useState, useEffect } from 'react';
-import { useSupabaseClient, User, useUser } from '@supabase/auth-helpers-react';
+import {
+	useSupabaseClient,
+	User,
+	Session,
+	useUser,
+} from '@supabase/auth-helpers-react';
 import { useRouter } from 'next/router';
-import { Database } from '../lib/types/supabase';
 import {
 	SupabaseSignInPayload,
 	SupabaseSignupPayload,
@@ -15,8 +20,13 @@ import {
 	Dashboards,
 } from '../config';
 
+export type SignupResponse = {
+	user: User | null;
+	session: Session | null;
+};
+
 export type AuthContextProps = {
-	signUp: (payload: SupabaseSignupPayload) => void;
+	signUp: (payload: SupabaseSignupPayload) => SignupResponse;
 	signIn: (payload: SupabaseSignInPayload) => void;
 	signOut: () => void;
 	loggedIn: boolean;
@@ -25,6 +35,10 @@ export type AuthContextProps = {
 };
 
 export const AuthContext = createContext<Partial<AuthContextProps>>({});
+
+export const appEventEmitter = new EventEmitter().on('', (data) => {});
+
+appEventEmitter;
 
 export function AuthProvider({ children }) {
 	const router = useRouter();
@@ -76,10 +90,13 @@ export function AuthProvider({ children }) {
 		});
 	}, []);
 
-	const signUp = async (payload: SupabaseSignupPayload): Promise<void> => {
+	const signUp = async (
+		payload: SupabaseSignupPayload
+	): Promise<SignupResponse | null> => {
+		let response = null;
 		try {
 			setLoading(true);
-			const { error } = await supabase.auth.signUp(payload);
+			const { data, error } = await supabase.auth.signUp(payload);
 			if (error) {
 				console.log({ message: error.message, type: 'error' });
 			} else {
@@ -88,12 +105,14 @@ export function AuthProvider({ children }) {
 						'Signup successful. Please check your inbox for a confirmation email!',
 					type: 'success',
 				});
+				response = data;
 			}
 		} catch (error: any) {
 			console.log({ message: error.error_description || error, type: 'error' });
 		} finally {
 			setLoading(false);
 		}
+		return response;
 	};
 
 	const signIn = async (payload: SupabaseSignInPayload): Promise<void> => {
