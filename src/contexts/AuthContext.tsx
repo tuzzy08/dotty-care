@@ -26,7 +26,7 @@ export type SignupResponse = {
 };
 
 export type AuthContextProps = {
-	signUp: (payload: SupabaseSignupPayload) => SignupResponse;
+	signUp: (payload: SupabaseSignupPayload) => Promise<SignupResponse | null>;
 	signIn: (payload: SupabaseSignInPayload) => void;
 	signOut: () => void;
 	loggedIn: boolean;
