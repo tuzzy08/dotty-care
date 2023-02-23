@@ -14,6 +14,7 @@ import { useForm, SubmitHandler } from 'react-hook-form';
 import Link from 'next/link';
 import { v4 as uuidv4 } from 'uuid';
 import axios from 'axios';
+import { setCookie } from 'cookies-next';
 import { useAuth } from '../../../lib/auth/useAuth';
 
 type Inputs = {
@@ -22,12 +23,6 @@ type Inputs = {
 	name: string;
 	mobile: string;
 	accountType: string;
-};
-
-const idType = {
-	Patient: 'patientID',
-	Hospital: 'hospitalID',
-	Ems: 'paramedicID',
 };
 
 export interface SignupData {
@@ -70,13 +65,12 @@ const useStyles = createStyles((theme) => ({
 	},
 }));
 
-export default function SignupForm({ setVisibleForm }) {
+export default function SignupForm({ setVisibleForm }: any) {
 	const { classes } = useStyles();
-	const { signUp } = useAuth();
+	const { authToken, setAuthToken, signUp } = useAuth();
 	const {
 		register,
 		handleSubmit,
-		watch,
 		formState: { errors },
 	} = useForm<Inputs>();
 	//TODO: USE RIGHT INPUT PROP TYPES
@@ -103,17 +97,21 @@ export default function SignupForm({ setVisibleForm }) {
 			} else if (form_data.accountType === 'Ems') {
 				signupData.options.data.paramedicID = id;
 			}
+
 			try {
 				const data = await signUp(signupData);
 				if (data && form_data.accountType === 'Patient') {
 					// Call api route to register user
-					const { data } = await axios.post('/api/auth/', {
+					const { data: token } = await axios.post('/api/auth/signup', {
 						id,
 						fullname: form_data.name,
 						email: form_data.email,
 						password: form_data.password,
 					});
-					console.log(data);
+					if (token) {
+						setCookie('token', token.token);
+					}
+					console.log(token.token);
 				}
 			} catch (error) {
 				console.log(error);

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { AppProps } from 'next/app';
 import Head from 'next/head';
+import { QueryClient, QueryClientProvider, useQuery } from 'react-query';
 import {
 	MantineProvider,
 	ColorSchemeProvider,
@@ -12,6 +13,7 @@ import { AuthProvider } from '../contexts/AuthContext';
 // import { UserProvider } from '@auth0/nextjs-auth0/client';
 
 export default function App(props: AppProps | any) {
+	const queryClient = new QueryClient();
 	const { Component, pageProps } = props;
 	const getLayout = Component.getLayout ?? ((page: typeof Component) => page);
 	const [supabase] = useState(() => createBrowserSupabaseClient());
@@ -31,14 +33,16 @@ export default function App(props: AppProps | any) {
 					withNormalizeCSS
 					theme={{ colorScheme }}
 				>
-					<SessionContextProvider
-						supabaseClient={supabase}
-						initialSession={pageProps.initialSession}
-					>
-						<AuthProvider>
-							{getLayout(<Component {...pageProps} />)}
-						</AuthProvider>
-					</SessionContextProvider>
+					<QueryClientProvider client={queryClient}>
+						<SessionContextProvider
+							supabaseClient={supabase}
+							initialSession={pageProps.initialSession}
+						>
+							<AuthProvider>
+								{getLayout(<Component {...pageProps} />)}
+							</AuthProvider>
+						</SessionContextProvider>
+					</QueryClientProvider>
 				</MantineProvider>
 			</ColorSchemeProvider>
 			{/* </UserProvider> */}

@@ -9,6 +9,8 @@ import {
 } from '@mantine/core';
 import Link from 'next/link';
 import { useForm, SubmitHandler } from 'react-hook-form';
+import axios from 'axios';
+import { setCookie } from 'cookies-next';
 import { useAuth } from '../../../lib/auth/useAuth';
 
 type Inputs = {
@@ -41,7 +43,7 @@ const useStyles = createStyles((theme) => ({
 	},
 }));
 
-export default function LoginForm({ setVisibleForm }) {
+export default function LoginForm({ setVisibleForm }: any) {
 	const { classes } = useStyles();
 	const { signIn } = useAuth();
 
@@ -55,10 +57,19 @@ export default function LoginForm({ setVisibleForm }) {
 		try {
 			console.log(form_data);
 			if (signIn) {
-				await signIn({
+				const data = await signIn({
 					email: form_data.email,
 					password: form_data.password,
 				});
+				if (data && data.user?.app_metadata.accountType === 'Patient') {
+					// Call api route to register user or get token
+					const { data: token } = await axios.post('/api/auth/login', {
+						patientID: data.user?.app_metadata.patientID,
+						email: form_data.email,
+						password: form_data.password,
+					});
+					if (token) setCookie('token', token.token);
+				}
 			}
 		} catch (error) {
 			console.log(error);

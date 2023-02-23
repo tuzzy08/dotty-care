@@ -1,34 +1,31 @@
 import { EventEmitter } from 'events';
-import { createContext, FunctionComponent, useState, useEffect } from 'react';
 import {
-	useSupabaseClient,
-	User,
-	Session,
-	useUser,
-} from '@supabase/auth-helpers-react';
+	createContext,
+	useState,
+	useEffect,
+	Dispatch,
+	SetStateAction,
+} from 'react';
+import { useSupabaseClient, User, Session } from '@supabase/auth-helpers-react';
 import { useRouter } from 'next/router';
 import {
 	SupabaseSignInPayload,
 	SupabaseSignupPayload,
 } from '../lib/auth/auth.types';
-import {
-	ROUTE_AUTH,
-	ROUTE_HOME_USERS,
-	ROUTE_HOME_EMS,
-	ROUTE_HOME_HOSPITAL,
-	accountDashboards,
-	Dashboards,
-} from '../config';
+import { ROUTE_AUTH, accountDashboards, Dashboards } from '../config';
+import { deleteCookie } from 'cookies-next';
 
-export type SignupResponse = {
+export type AuthResponse = {
 	user: User | null;
 	session: Session | null;
 };
 
 export type AuthContextProps = {
-	signUp: (payload: SupabaseSignupPayload) => Promise<SignupResponse | null>;
-	signIn: (payload: SupabaseSignInPayload) => void;
+	signUp: (payload: SupabaseSignupPayload) => Promise<AuthResponse | null>;
+	signIn: (payload: SupabaseSignInPayload) => Promise<AuthResponse | null>;
 	signOut: () => void;
+	setAuthToken: Dispatch<SetStateAction<string | null>>;
+	authToken: string | null;
 	loggedIn: boolean;
 	loading: boolean;
 	userLoading: boolean;
@@ -40,9 +37,10 @@ export const appEventEmitter = new EventEmitter().on('', (data) => {});
 
 appEventEmitter;
 
-export function AuthProvider({ children }) {
+export function AuthProvider({ children }: any) {
 	const router = useRouter();
 	const [loading, setLoading] = useState(false);
+	const [authToken, setAuthToken] = useState<string | null>(null);
 	const supabase = useSupabaseClient();
 	const [user, setUser] = useState<User | null>(null);
 	const [userLoading, setUserLoading] = useState(true);
@@ -92,7 +90,7 @@ export function AuthProvider({ children }) {
 
 	const signUp = async (
 		payload: SupabaseSignupPayload
-	): Promise<SignupResponse | null> => {
+	): Promise<AuthResponse | null> => {
 		let response = null;
 		try {
 			setLoading(true);
@@ -115,10 +113,13 @@ export function AuthProvider({ children }) {
 		return response;
 	};
 
-	const signIn = async (payload: SupabaseSignInPayload): Promise<void> => {
+	const signIn = async (
+		payload: SupabaseSignInPayload
+	): Promise<AuthResponse | null> => {
+		let res: any = {};
 		try {
 			setLoading(true);
-			const { error } = await supabase.auth.signInWithPassword(payload);
+			const { data, error } = await supabase.auth.signInWithPassword(payload);
 			if (error) {
 				console.log({ message: error.message, type: 'error' });
 			} else {
@@ -126,25 +127,34 @@ export function AuthProvider({ children }) {
 					message: "Log in successful. I'll redirect you once I'm done",
 					type: 'success',
 				});
+				if (data) {
+					res = data;
+				}
 			}
-		} catch (error) {
+		} catch (error: any) {
 			console.log({ message: error.error_description || error, type: 'error' });
 		} finally {
 			setLoading(false);
 		}
+		return res;
 	};
 
-	const signOut = async () => await supabase.auth.signOut();
+	const signOut = async () => {
+		deleteCookie('token');
+		await supabase.auth.signOut();
+	};
 
 	return (
 		<AuthContext.Provider
 			value={{
 				signUp,
 				signIn,
-				signOut, // new
-				loggedIn, // new
-				loading, // new
-				userLoading, // // new
+				signOut,
+				loggedIn,
+				loading,
+				userLoading,
+				authToken,
+				setAuthToken,
 			}}
 		>
 			{children}
