@@ -1,5 +1,12 @@
 import { useState } from 'react';
-import { createStyles, Table, ScrollArea, Button, Modal } from '@mantine/core';
+import {
+	createStyles,
+	Table,
+	Text,
+	ScrollArea,
+	Button,
+	Modal,
+} from '@mantine/core';
 import { RecordCard } from './RecordCard';
 
 const useStyles = createStyles((theme) => ({
@@ -30,7 +37,12 @@ const useStyles = createStyles((theme) => ({
 }));
 
 interface RecordsTableProps {
-	data: { hospital: string; doctor_name: string; date_created: string }[];
+	data: {
+		recordID: string;
+		hospitalName: string;
+		doctorName: string;
+		dateCreated: string;
+	}[];
 }
 
 export function RecordsTable({ data }: RecordsTableProps) {
@@ -39,10 +51,10 @@ export function RecordsTable({ data }: RecordsTableProps) {
 	const [opened, setOpened] = useState(false);
 
 	const rows = data.map((row) => (
-		<tr key={row.hospital}>
-			<td>{row.hospital}</td>
-			<td>{row.doctor_name}</td>
-			<td>{row.date_created}</td>
+		<tr key={row.hospitalName}>
+			<td>{row.hospitalName}</td>
+			<td>{row.doctorName}</td>
+			<td>{row.dateCreated}</td>
 			<td>
 				{
 					<Button
@@ -67,6 +79,9 @@ export function RecordsTable({ data }: RecordsTableProps) {
 			<Modal opened={opened} onClose={() => setOpened(false)} centered>
 				<RecordCard title='Record One' description='Doctors notes here' />
 			</Modal>
+			<Text size={'md'} align={'center'} weight={'bold'} pb={25}>
+				My Records
+			</Text>
 			<Table sx={{ minWidth: 700 }}>
 				<thead className={cx(classes.header, { [classes.scrolled]: scrolled })}>
 					<tr>

@@ -27,17 +27,22 @@ export default async function handler(
 
 	const { token } = data;
 
+	console.log('admin token');
+	console.log(token);
+
 	const query = {};
 	if (token) {
 		const { data } = await axios.post(
 			'http://localhost:8801/user/enroll',
-			{ id: req.body.id, secret: req.body.password },
+			{ id: req.body.patientID, secret: req.body.password },
 			{
 				headers: {
 					Authorization: `Bearer ${token}`,
 				},
 			}
 		);
+		console.log('usr tkn');
+		console.log(data);
 		if (data.token) res.status(200).send(data.token);
 	}
 }

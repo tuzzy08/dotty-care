@@ -61,14 +61,16 @@ export default function LoginForm({ setVisibleForm }: any) {
 					email: form_data.email,
 					password: form_data.password,
 				});
-				if (data && data.user?.app_metadata.accountType === 'Patient') {
+				if (data && data.user?.user_metadata.accountType === 'Patient') {
 					// Call api route to register user or get token
 					const { data: token } = await axios.post('/api/auth/login', {
-						patientID: data.user?.app_metadata.patientID,
+						patientID: data.user?.user_metadata.patientID,
 						email: form_data.email,
 						password: form_data.password,
 					});
-					if (token) setCookie('token', token.token);
+					console.log('token in login component');
+					console.log(token);
+					if (token) setCookie('token', token);
 				}
 			}
 		} catch (error) {

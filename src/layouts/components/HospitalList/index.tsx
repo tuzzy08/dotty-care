@@ -47,8 +47,8 @@ const useStyles = createStyles((theme) => ({
 }));
 
 interface RowData {
-	hospital: string;
-	email: string;
+	hospital_name: string;
+	// email: string;
 	// contact: string;
 	access: string;
 }
@@ -139,9 +139,9 @@ export default function HospitalList({ data }: TableSortProps) {
 	};
 
 	const rows = sortedData.map((row) => (
-		<tr key={row.hospital}>
-			<td>{row.hospital}</td>
-			<td>{row.email}</td>
+		<tr key={row.hospital_name}>
+			<td>{row.hospital_name}</td>
+			{/* <td>{row.email}</td> */}
 			<td>
 				{
 					<Badge color={`${row.access === 'Granted' ? 'green' : 'red'}`}>
@@ -187,19 +187,19 @@ export default function HospitalList({ data }: TableSortProps) {
 					<thead>
 						<tr>
 							<Th
-								sorted={sortBy === 'hospital'}
+								sorted={sortBy === 'hospital_name'}
 								reversed={reverseSortDirection}
-								onSort={() => setSorting('hospital')}
+								onSort={() => setSorting('hospital_name')}
 							>
 								Hospital
 							</Th>
-							<Th
+							{/* <Th
 								sorted={sortBy === 'email'}
 								reversed={reverseSortDirection}
 								onSort={() => setSorting('email')}
 							>
 								Email
-							</Th>
+							</Th> */}
 							{/* <Th
               sorted={sortBy === 'contact'}
               reversed={reverseSortDirection}

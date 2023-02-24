@@ -15,7 +15,7 @@ export default async function handler(
 		const { data } = await axios.post(
 			'http://localhost:8801/invoke/fasthealth-1/fasthealth',
 			{
-				method: 'FHContract:getAllHopitals',
+				method: 'FHContract:getAllHospitals',
 				args: [],
 			},
 			{

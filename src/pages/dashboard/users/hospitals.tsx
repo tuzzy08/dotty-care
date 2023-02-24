@@ -1,36 +1,37 @@
 import { createServerSupabaseClient } from '@supabase/auth-helpers-nextjs';
 import { GetServerSidePropsContext } from 'next';
-import { Container, Group } from '@mantine/core';
+import { Container, Group, Text } from '@mantine/core';
 import { getCookie } from 'cookies-next';
 import { useQuery } from 'react-query';
 import axios from 'axios';
 import { PageProps } from '../types';
 import { Layout } from '../../../layouts';
-import { RecordsTable } from '../components/RecordsTable';
 import ProfileCard from '../../../layouts/components/ProfileCard';
-// import HospitalList from '../../../layouts/components/HospitalList';
+import HospitalList from '../../../layouts/components/HospitalList';
 // import { data } from '../../../layouts/components/mock/hospitals';
 
-IndexPage.getLayout = function getLayout(page: any) {
+HospitalsPage.getLayout = function getLayout(page: any) {
 	return <Layout variant={'patient'}>{page}</Layout>;
 };
 
-export default function IndexPage({ user }: PageProps) {
-	console.log(user);
+export default function HospitalsPage({ user }: PageProps) {
 	const authToken = getCookie('token');
-	if (authToken) {
-		const { isLoading, error, data } = useQuery('myRecords', async () => {
-			const { data } = await axios.post(
-				`/api/records/${user.user_metadata.patientID}`,
-				{
-					token: authToken,
-				}
-			);
-			return data;
+	let dataAsObjects;
+	// if (authToken) {
+	const { isLoading, error, data } = useQuery('hospitals', async () => {
+		const { data } = await axios.post(`/api/hospitals`, {
+			token: authToken,
 		});
-		console.log('records list');
-		console.log(data);
+		return data;
+	});
+
+	if (data) {
+		console.log('hospitals list');
+		console.log(data.response);
+		dataAsObjects = data.response.map((item: string) => JSON.parse(item));
 	}
+
+	// }
 
 	return (
 		<Container size='xl' py='xl'>
@@ -41,7 +42,9 @@ export default function IndexPage({ user }: PageProps) {
 					name={user.user_metadata.name}
 					email={`${user.email}`}
 				/>
-				<RecordsTable data={[]} />
+				{/* <HospitalList data={data} /> */}
+				{isLoading && <Text>Loading</Text>}
+				{dataAsObjects && <HospitalList data={dataAsObjects} />}
 			</Group>
 		</Container>
 	);
@@ -55,8 +58,8 @@ export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
 		data: { session },
 	} = await supabase.auth.getSession();
 
-	// console.log('cookies');
-	// console.log(ctx.req.cookies);
+	console.log('cookies');
+	console.log(ctx.req.cookies);
 
 	if (!session)
 		return {

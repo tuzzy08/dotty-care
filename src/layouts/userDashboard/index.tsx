@@ -13,8 +13,8 @@ import { IconHome2, IconReportMedical, IconSettings } from '@tabler/icons';
 export const data: Array<Menu_Item> = [
 	{ link: '/dashboard/users', label: 'Home', icon: IconHome2 },
 	{
-		link: '/dashboard/users/records',
-		label: 'My Medical Records',
+		link: '/dashboard/users/hospitals',
+		label: 'Hospitals',
 		icon: IconReportMedical,
 	},
 	{ link: '/dashboard/users/settings', label: 'Settings', icon: IconSettings },

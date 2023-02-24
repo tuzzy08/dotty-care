@@ -16,6 +16,9 @@ import {
 } from '@mantine/core';
 import {} from '@tabler/icons';
 import { GetServerSidePropsContext } from 'next';
+import { getCookie } from 'cookies-next';
+import { useQuery } from 'react-query';
+import axios from 'axios';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { Layout } from '../../../layouts';
 
@@ -27,6 +30,19 @@ type Inputs = {
 NewMedicalRecordPage.getLayout = function getLayout(page: any) {
 	return <Layout variant={'hospital'}>{page}</Layout>;
 };
+function getpatientRecord(patient_ID: string) {
+	const authToken = getCookie('token');
+	if (authToken) {
+		const { isLoading, error, data } = useQuery(`${patient_ID}`, async () => {
+			const { data } = await axios.post('/api/records', {
+				token: authToken,
+			});
+			return data;
+		});
+		console.log('hospital list');
+		console.log(data);
+	}
+}
 
 export default function NewMedicalRecordPage() {
 	// dynamic import
