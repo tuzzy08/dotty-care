@@ -1,16 +1,10 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import { createServerSupabaseClient } from '@supabase/auth-helpers-nextjs';
 import axios from 'axios';
 
 export default async function handler(
 	req: NextApiRequest,
 	res: NextApiResponse
 ) {
-	// const supabase = createServerSupabaseClient({ req, res });
-	// supabase.auth.setSession;
-
-	// console.log(req.body);
-
 	// Enroll Admin User
 	const { data } = await axios.post('http://localhost:8801/user/enroll', {
 		id: 'admin',
@@ -18,7 +12,6 @@ export default async function handler(
 	});
 	const { token } = data;
 
-	const query = {};
 	if (token) {
 		const { data } = await axios.post(
 			'http://localhost:8801/user/enroll',
@@ -29,8 +22,8 @@ export default async function handler(
 				},
 			}
 		);
-		console.log('usr tkn');
-		console.log(data.token);
+		// console.log('usr tkn');
+		// console.log(data.token);
 		if (data.token) res.status(200).send(data.token);
 	}
 }

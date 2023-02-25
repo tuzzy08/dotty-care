@@ -8,6 +8,7 @@ import { PageProps } from '../types';
 import { Layout } from '../../../layouts';
 import { RecordsTable } from '../components/RecordsTable';
 import ProfileCard from '../../../layouts/components/ProfileCard';
+import { useAuth } from '../../../lib/auth/useAuth';
 // import HospitalList from '../../../layouts/components/HospitalList';
 // import { data } from '../../../layouts/components/mock/hospitals';
 
@@ -16,8 +17,11 @@ IndexPage.getLayout = function getLayout(page: any) {
 };
 
 export default function IndexPage({ user }: PageProps) {
-	console.log(user);
-	const authToken = getCookie('token');
+	// console.log(user);
+	// const authToken = getCookie('token');
+	const { authToken } = useAuth();
+	console.log('Auth Token');
+	console.log(authToken);
 	if (authToken) {
 		const { isLoading, error, data } = useQuery('myRecords', async () => {
 			const { data } = await axios.post(

@@ -10,55 +10,47 @@ export default async function handler(
 	req: NextApiRequest,
 	res: NextApiResponse<Data>
 ) {
-	// if (req.method === 'POST') {
-	// 	// Enroll Admin User
-	// 	const { data } = await axios.post(
-	// 		'http://localhost:8801/user/enroll',
-	// 		{
-	// 			id: 'admin',
-	// 			secret: 'adminpw',
-	// 		}
-	// 		// {
-	// 		// 	headers: {
-	// 		// 		'Content-Type': 'application/json',
-	// 		// 	},
-	// 		// }
-	// 	);
-	// 	const adminToken = data.token;
-	// 	console.log('admin token');
-	// 	console.log(adminToken);
-	// 	const query = {};
-	// 	if (adminToken) {
-	// 		const { data } = await axios.post(
-	// 			'http://localhost:8801/user/enroll',
-	// 			{ id: req.body.patientID, secret: req.body.email },
-	// 			{
-	// 				headers: {
-	// 					Authorization: `Bearer ${adminToken}`,
-	// 				},
-	// 			}
-	// 		);
-	// 		// console.log('usr tkn');
-	// 		// console.log(data);
-	// 		// if (data.token) res.status(200).send(data.token);
-	// 		const { patientID } = req.query;
-	// 		const userToken = data.token;
-	// 		if (patientID) {
-	// 			const { data } = await axios.post(
-	// 				'http://localhost:8801/query/fasthealth-1/fasthealth',
-	// 				{
-	// 					method: 'FHContract:getPatient',
-	// 					args: [patientID],
-	// 				},
-	// 				{
-	// 					headers: {
-	// 						Authorization: `Bearer ${userToken}`,
-	// 					},
-	// 				}
-	// 			);
-	// 			console.log(data);
-	// 			res.status(200).send(data);
-	// 		}
-	// 	}
-	// }
+	if (req.method === 'POST') {
+		// Enroll Admin User
+		const { data } = await axios.post('http://localhost:8801/user/enroll', {
+			id: 'admin',
+			secret: 'adminpw',
+		});
+		const { token: adminToken } = data;
+		console.log('admin token');
+		console.log(adminToken);
+
+		if (adminToken) {
+			const { data } = await axios.post(
+				'http://localhost:8801/user/enroll',
+				{ id: req.body.patientID, secret: req.body.email },
+				{
+					headers: {
+						Authorization: `Bearer ${adminToken}`,
+					},
+				}
+			);
+			// console.log('usr tkn');
+			// console.log(data);
+			// if (data.token) res.status(200).send(data.token);
+			const { patientID } = req.query;
+			const { token: userToken } = data;
+			if (patientID) {
+				const { data } = await axios.post(
+					'http://localhost:8801/query/fasthealth-1/fasthealth',
+					{
+						method: 'FHContract:getPatient',
+						args: [`${patientID}`],
+					},
+					{
+						headers: {
+							Authorization: `Bearer ${userToken}`,
+						},
+					}
+				);
+				console.log(data);
+				res.status(200).send(data);
+			}
+		}
+	}
 }

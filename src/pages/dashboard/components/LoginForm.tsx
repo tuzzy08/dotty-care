@@ -46,7 +46,7 @@ const useStyles = createStyles((theme) => ({
 
 export default function LoginForm({ setVisibleForm }: any) {
 	const { classes } = useStyles();
-	const { signIn } = useAuth();
+	const { signIn, setAuthToken } = useAuth();
 
 	//TODO: USE RIGHT INPUT PROP TYPES
 	const {
@@ -73,11 +73,11 @@ export default function LoginForm({ setVisibleForm }: any) {
 						patientID: user?.user_metadata.patientID,
 						email: form_data.email,
 					});
-					console.log('token in login component');
-					console.log(userToken);
+					// console.log('token in login component');
+					// console.log(userToken);
 
-					if (userToken) {
-						setCookie('token', userToken);
+					if (userToken && setAuthToken) {
+						setAuthToken(userToken);
 					}
 				}
 			}

@@ -32,7 +32,7 @@ export default async function handler(
 
 		if (adminToken) {
 			const {
-				data: { token: userToken },
+				data: { token },
 			} = await axios.post(
 				'http://localhost:8801/user/enroll',
 				{ id: req.body.patientID, secret: req.body.email },
@@ -43,17 +43,18 @@ export default async function handler(
 				}
 			);
 
-			const query = {};
-			// const { token } = req.body;
+			// console.log('User Token in API');
+			// console.log(token);
+
 			const { data } = await axios.post(
-				'http://localhost:8801/invoke/fasthealth-1/fasthealth',
+				'http://localhost:8801/query/fasthealth-1/fasthealth',
 				{
 					method: 'FHContract:getAllHospitals',
 					args: [],
 				},
 				{
 					headers: {
-						Authorization: `Bearer ${userToken}`,
+						Authorization: `Bearer ${token}`,
 					},
 				}
 			);

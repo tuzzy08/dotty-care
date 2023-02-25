@@ -1,26 +1,27 @@
 import { createServerSupabaseClient } from '@supabase/auth-helpers-nextjs';
 import { GetServerSidePropsContext } from 'next';
 import { Container, Group, Text } from '@mantine/core';
-import { getCookie } from 'cookies-next';
 import { useQuery } from 'react-query';
 import axios from 'axios';
 import { PageProps } from '../types';
 import { Layout } from '../../../layouts';
 import ProfileCard from '../../../layouts/components/ProfileCard';
 import HospitalList from '../../../layouts/components/HospitalList';
-// import { data } from '../../../layouts/components/mock/hospitals';
+import { useAuth } from '../../../lib/auth';
 
 HospitalsPage.getLayout = function getLayout(page: any) {
 	return <Layout variant={'patient'}>{page}</Layout>;
 };
 
 export default function HospitalsPage({ user }: PageProps) {
-	const authToken = getCookie('token');
+	const { authToken } = useAuth();
 	let dataAsObjects;
 	// if (authToken) {
 	const { isLoading, error, data } = useQuery('hospitals', async () => {
 		const { data } = await axios.post(`/api/hospitals`, {
 			token: authToken,
+			patientID: user.user_metadata.patientID,
+			email: user.email,
 		});
 		return data;
 	});
@@ -58,8 +59,8 @@ export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
 		data: { session },
 	} = await supabase.auth.getSession();
 
-	console.log('cookies');
-	console.log(ctx.req.cookies);
+	// console.log('cookies');
+	// console.log(ctx.req.cookies);
 
 	if (!session)
 		return {

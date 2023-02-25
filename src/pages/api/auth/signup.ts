@@ -40,7 +40,7 @@ export default async function handler(
 				}
 			)
 			.then(async (response) => {
-				console.log(response);
+				// console.log(response);
 				const { data } = await axios.post(
 					'http://localhost:8801/user/enroll',
 					{ id: req.body.id, secret: req.body.email },
@@ -50,7 +50,24 @@ export default async function handler(
 						},
 					}
 				);
-				res.status(200).send(data);
+				return data.token;
+			})
+			.then(async (token) => {
+				const { data } = await axios.post(
+					'http://localhost:8801/invoke/fasthealth-1/fasthealth',
+					{
+						method: 'FHContract:createPatient',
+						args: [`${req.body.id}`, `${req.body.fullname}`],
+					},
+					{
+						headers: {
+							Authorization: `Bearer ${token}`,
+						},
+					}
+				);
+				console.log('token before return');
+				console.log(token);
+				return token;
 			})
 			.catch((error) => {
 				console.log(error);

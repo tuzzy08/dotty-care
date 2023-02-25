@@ -107,8 +107,8 @@ export default function SignupForm({ setVisibleForm }: any) {
 						fullname: form_data.name,
 						email: form_data.email,
 					});
-					if (token) {
-						setCookie('token', token.token);
+					if (token && setAuthToken) {
+						setAuthToken(token.token);
 					}
 					console.log(token.token);
 				}

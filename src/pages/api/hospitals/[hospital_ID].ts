@@ -51,7 +51,7 @@ export default async function handler(
 					'http://localhost:8801/query/fasthealth-1/fasthealth',
 					{
 						method: 'FHContract:getHospital',
-						args: [hospital_ID],
+						args: [`${hospital_ID}`],
 					},
 					{
 						headers: {
