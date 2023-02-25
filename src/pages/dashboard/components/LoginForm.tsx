@@ -12,6 +12,7 @@ import { useForm, SubmitHandler } from 'react-hook-form';
 import axios from 'axios';
 import { setCookie } from 'cookies-next';
 import { useAuth } from '../../../lib/auth/useAuth';
+import { useQuery } from 'react-query';
 
 type Inputs = {
 	email: string;
@@ -57,20 +58,27 @@ export default function LoginForm({ setVisibleForm }: any) {
 		try {
 			console.log(form_data);
 			if (signIn) {
-				const data = await signIn({
+				const response = await signIn({
 					email: form_data.email,
 					password: form_data.password,
 				});
-				if (data && data.user?.user_metadata.accountType === 'Patient') {
+				// Setup account on chain
+				if (
+					response &&
+					response.user?.user_metadata.accountType === 'Patient'
+				) {
+					const { user } = response;
 					// Call api route to register user or get token
-					const { data: token } = await axios.post('/api/auth/login', {
-						patientID: data.user?.user_metadata.patientID,
+					const { data: userToken } = await axios.post('/api/auth/login', {
+						patientID: user?.user_metadata.patientID,
 						email: form_data.email,
-						password: form_data.password,
 					});
 					console.log('token in login component');
-					console.log(token);
-					if (token) setCookie('token', token);
+					console.log(userToken);
+
+					if (userToken) {
+						setCookie('token', userToken);
+					}
 				}
 			}
 		} catch (error) {

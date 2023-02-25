@@ -32,7 +32,7 @@ export default async function handler(
 		await axios
 			.post(
 				'http://localhost:8801/user/register',
-				{ id: req.body.id, secret: req.body.password },
+				{ id: req.body.id, secret: req.body.email },
 				{
 					headers: {
 						Authorization: `Bearer ${token}`,
@@ -43,7 +43,7 @@ export default async function handler(
 				console.log(response);
 				const { data } = await axios.post(
 					'http://localhost:8801/user/enroll',
-					{ id: req.body.id, secret: req.body.password },
+					{ id: req.body.id, secret: req.body.email },
 					{
 						headers: {
 							Authorization: `Bearer ${token}`,

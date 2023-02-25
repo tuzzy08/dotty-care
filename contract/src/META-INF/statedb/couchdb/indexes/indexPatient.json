@@ -1,0 +1,6 @@
+{
+	"index": { "fields": ["docType", "patientID"] },
+	"ddoc": "indexPatientDoc",
+	"name": "indexPatient",
+	"type": "json"
+}

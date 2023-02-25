@@ -51,6 +51,7 @@ interface RowData {
 	// email: string;
 	// contact: string;
 	access: string;
+	hospital_ID: string;
 }
 
 interface TableSortProps {
@@ -119,6 +120,7 @@ function sortData(
 export default function HospitalList({ data }: TableSortProps) {
 	const [opened, setOpened] = useState(false);
 	const [search, setSearch] = useState('');
+	const [hospital, setHospital] = useState<string | null>(null);
 	const [sortedData, setSortedData] = useState(data);
 	const [sortBy, setSortBy] = useState<keyof RowData | null>(null);
 	const [reverseSortDirection, setReverseSortDirection] = useState(false);
@@ -151,7 +153,14 @@ export default function HospitalList({ data }: TableSortProps) {
 			</td>
 			<td>
 				{
-					<Button onClick={() => setOpened(true)} variant='outline' size='sm'>
+					<Button
+						onClick={() => {
+							setHospital(row.hospital_ID);
+							setOpened(true);
+						}}
+						variant='outline'
+						size='sm'
+					>
 						view
 					</Button>
 				}
@@ -166,7 +175,7 @@ export default function HospitalList({ data }: TableSortProps) {
 			}}
 		>
 			<Modal opened={opened} onClose={() => setOpened(false)}>
-				<HospitalCard />
+				<HospitalCard hospital_ID={hospital} />
 			</Modal>
 			<ScrollArea>
 				<Text size={'md'} align={'center'} weight={'bold'} pb={25}>

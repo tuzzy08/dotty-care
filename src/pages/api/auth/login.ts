@@ -12,29 +12,17 @@ export default async function handler(
 	// console.log(req.body);
 
 	// Enroll Admin User
-	const { data } = await axios.post(
-		'http://localhost:8801/user/enroll',
-		{
-			id: 'admin',
-			secret: 'adminpw',
-		}
-		// {
-		// 	headers: {
-		// 		'Content-Type': 'application/json',
-		// 	},
-		// }
-	);
-
+	const { data } = await axios.post('http://localhost:8801/user/enroll', {
+		id: 'admin',
+		secret: 'adminpw',
+	});
 	const { token } = data;
-
-	console.log('admin token');
-	console.log(token);
 
 	const query = {};
 	if (token) {
 		const { data } = await axios.post(
 			'http://localhost:8801/user/enroll',
-			{ id: req.body.patientID, secret: req.body.password },
+			{ id: req.body.patientID, secret: req.body.email },
 			{
 				headers: {
 					Authorization: `Bearer ${token}`,
@@ -42,7 +30,7 @@ export default async function handler(
 			}
 		);
 		console.log('usr tkn');
-		console.log(data);
+		console.log(data.token);
 		if (data.token) res.status(200).send(data.token);
 	}
 }

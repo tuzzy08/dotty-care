@@ -44,14 +44,14 @@ export default async function handler(
 			// console.log('usr tkn');
 			// console.log(data);
 			// if (data.token) res.status(200).send(data.token);
-			const { patient_ID } = req.query;
+			const { hospital_ID } = req.query;
 			const userToken = data.token;
-			if (patient_ID) {
+			if (hospital_ID) {
 				const { data } = await axios.post(
 					'http://localhost:8801/query/fasthealth-1/fasthealth',
 					{
-						method: 'FHContract:QueryRecordsByPatient',
-						args: [patient_ID],
+						method: 'FHContract:getHospital',
+						args: [hospital_ID],
 					},
 					{
 						headers: {

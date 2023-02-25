@@ -106,7 +106,6 @@ export default function SignupForm({ setVisibleForm }: any) {
 						id,
 						fullname: form_data.name,
 						email: form_data.email,
-						password: form_data.password,
 					});
 					if (token) {
 						setCookie('token', token.token);

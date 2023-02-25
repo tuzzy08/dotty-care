@@ -2,7 +2,7 @@ import { createServerSupabaseClient } from '@supabase/auth-helpers-nextjs';
 import { GetServerSidePropsContext } from 'next';
 import { Container, Group } from '@mantine/core';
 import { getCookie } from 'cookies-next';
-import { useQuery } from 'react-query';
+import { dehydrate, QueryClient, useQuery } from 'react-query';
 import axios from 'axios';
 import { PageProps } from '../types';
 import { Layout } from '../../../layouts';
@@ -24,12 +24,35 @@ export default function IndexPage({ user }: PageProps) {
 				`/api/records/${user.user_metadata.patientID}`,
 				{
 					token: authToken,
+					patientID: user.user_metadata.patientID,
+					email: user.email,
 				}
 			);
 			return data;
 		});
-		console.log('records list');
-		console.log(data);
+		if (data) {
+			console.log('records list');
+			console.log(data);
+		}
+	}
+
+	if (authToken) {
+		const { data } = useQuery('userObject', async () => {
+			const { data } = await axios.post(
+				`/api/users/${user.user_metadata.patientID}`,
+				{
+					token: authToken,
+					patientID: user.user_metadata.patientID,
+					email: user.email,
+				}
+			);
+
+			return data;
+		});
+		if (data) {
+			console.log('User Object');
+			console.log(data);
+		}
 	}
 
 	return (
@@ -66,10 +89,23 @@ export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
 			},
 		};
 
+	const patientID = session.user.user_metadata.patientID;
+	const email = session.user.email;
+	// const queryClient = new QueryClient();
+	// await queryClient.prefetchQuery('userObject', async () => {
+	// 	const { data } = await axios.post(`/api/users/${patientID}`, {
+	// 		patientID,
+	// 		email,
+	// 	});
+	// 	console.log(data);
+	// 	return data;
+	// });
+
 	return {
 		props: {
 			initialSession: session,
 			user: session.user,
+			// dehydratedState: dehydrate(queryClient),
 		},
 	};
 };

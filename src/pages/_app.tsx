@@ -1,7 +1,12 @@
 import { useState } from 'react';
 import { AppProps } from 'next/app';
 import Head from 'next/head';
-import { QueryClient, QueryClientProvider, useQuery } from 'react-query';
+import {
+	Hydrate,
+	QueryClient,
+	QueryClientProvider,
+	useQuery,
+} from 'react-query';
 import {
 	MantineProvider,
 	ColorSchemeProvider,
@@ -13,7 +18,18 @@ import { AuthProvider } from '../contexts/AuthContext';
 // import { UserProvider } from '@auth0/nextjs-auth0/client';
 
 export default function App(props: AppProps | any) {
-	const queryClient = new QueryClient();
+	const [queryClient] = useState(
+		() =>
+			new QueryClient({
+				defaultOptions: {
+					queries: {
+						refetchOnWindowFocus: false,
+						staleTime: 3600000,
+						cacheTime: 3600000,
+					},
+				},
+			})
+	);
 	const { Component, pageProps } = props;
 	const getLayout = Component.getLayout ?? ((page: typeof Component) => page);
 	const [supabase] = useState(() => createBrowserSupabaseClient());
@@ -39,7 +55,9 @@ export default function App(props: AppProps | any) {
 							initialSession={pageProps.initialSession}
 						>
 							<AuthProvider>
-								{getLayout(<Component {...pageProps} />)}
+								<Hydrate state={pageProps.dehydratedState}>
+									{getLayout(<Component {...pageProps} />)}
+								</Hydrate>
 							</AuthProvider>
 						</SessionContextProvider>
 					</QueryClientProvider>

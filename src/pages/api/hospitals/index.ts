@@ -30,9 +30,10 @@ export default async function handler(
 		console.log('admin token');
 		console.log(adminToken);
 
-		const query = {};
 		if (adminToken) {
-			const { data } = await axios.post(
+			const {
+				data: { token: userToken },
+			} = await axios.post(
 				'http://localhost:8801/user/enroll',
 				{ id: req.body.patientID, secret: req.body.email },
 				{
@@ -41,27 +42,23 @@ export default async function handler(
 					},
 				}
 			);
-			// console.log('usr tkn');
-			// console.log(data);
-			// if (data.token) res.status(200).send(data.token);
-			const { patient_ID } = req.query;
-			const userToken = data.token;
-			if (patient_ID) {
-				const { data } = await axios.post(
-					'http://localhost:8801/query/fasthealth-1/fasthealth',
-					{
-						method: 'FHContract:QueryRecordsByPatient',
-						args: [patient_ID],
+
+			const query = {};
+			// const { token } = req.body;
+			const { data } = await axios.post(
+				'http://localhost:8801/invoke/fasthealth-1/fasthealth',
+				{
+					method: 'FHContract:getAllHospitals',
+					args: [],
+				},
+				{
+					headers: {
+						Authorization: `Bearer ${userToken}`,
 					},
-					{
-						headers: {
-							Authorization: `Bearer ${userToken}`,
-						},
-					}
-				);
-				console.log(data);
-				res.status(200).send(data);
-			}
+				}
+			);
+			console.log(data);
+			res.status(200).send(data);
 		}
 	}
 }
