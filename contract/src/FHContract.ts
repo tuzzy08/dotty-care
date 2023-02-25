@@ -62,8 +62,8 @@ export class FHContract extends Contract {
 	@Transaction()
 	public async createPatient(
 		ctx: Context,
-		fullname: string,
-		patient_ID: string
+		patient_ID: string,
+		fullname: string
 	): Promise<Patient> {
 		//
 		if (!this.checkValid(patient_ID)) throw new Error('Invalid patient ID!');
@@ -83,8 +83,8 @@ export class FHContract extends Contract {
 	@Transaction()
 	public async createRecord(
 		ctx: Context,
-		data: RecordInput,
-		patientID: string
+		patientID: string,
+		data: RecordInput
 	): Promise<Record> {
 		if (!this.checkValid(patientID)) throw new Error('Invalid patient ID!');
 		// TODO: CHECK TO ENSURE ONLY PATIENTS CAN CALL THIS FUNCTION
