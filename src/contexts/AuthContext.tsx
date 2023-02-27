@@ -29,6 +29,8 @@ export type AuthContextProps = {
 	loggedIn: boolean;
 	loading: boolean;
 	userLoading: boolean;
+	permissions: any;
+	setPermissions: Dispatch<SetStateAction<string | null>>;
 };
 
 export const AuthContext = createContext<Partial<AuthContextProps>>({});
@@ -45,6 +47,7 @@ export function AuthProvider({ children }: any) {
 	const [user, setUser] = useState<User | null>(null);
 	const [userLoading, setUserLoading] = useState(true);
 	const [loggedIn, setLoggedin] = useState(false);
+	const [permissions, setPermissions] = useState<string | null>(null);
 	// const { handleMessage } = useMessage()
 
 	useEffect(() => {
@@ -53,18 +56,12 @@ export function AuthProvider({ children }: any) {
 				data: { user },
 			} = await supabase.auth.getUser();
 			const accountType: string = user?.user_metadata.accountType;
-			// console.log('IN-CONTEXT')
-			// console.log(user)
 			setUserLoading(false);
 			if (user) {
 				setUser(user);
 				// setLoggedin(true)
 				// if(user.user_metadata)
-				console.log('Account Type');
-				console.log(accountType);
 				const path = accountDashboards[accountType as keyof Dashboards];
-				// console.log('path')
-				// console.log(path)
 				// TODO: Get the current path and remain on it if its just a page refresh.
 				path && router.push(path);
 			}
@@ -155,6 +152,8 @@ export function AuthProvider({ children }: any) {
 				userLoading,
 				authToken,
 				setAuthToken,
+				permissions,
+				setPermissions,
 			}}
 		>
 			{children}

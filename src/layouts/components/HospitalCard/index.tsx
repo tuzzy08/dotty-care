@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
 	Card,
 	Image,
@@ -7,19 +7,12 @@ import {
 	Badge,
 	createStyles,
 	Center,
-	Button,
 	Switch,
 } from '@mantine/core';
-import {
-	IconGasStation,
-	IconGauge,
-	IconManualGearbox,
-	IconMail,
-	IconPhone,
-} from '@tabler/icons';
+import { IconMail, IconPhone } from '@tabler/icons';
 import axios from 'axios';
-import { getCookie } from 'cookies-next';
 import { useQuery } from 'react-query';
+import { useAuth } from '../../../lib/auth';
 
 const useStyles = createStyles((theme) => ({
 	card: {
@@ -69,8 +62,9 @@ const mockdata = [
 	// { label: 'Electric', icon: IconGasStation },
 ];
 
-export default function HospitalCard({ hospital_ID }: any) {
+export default function HospitalCard({ hospital_ID, patientID, email }: any) {
 	const { classes } = useStyles();
+	const { authToken, permissions, setPermissions } = useAuth();
 	const [checked, setChecked] = useState(true);
 	const features = mockdata.map((feature) => (
 		<Center key={feature.label}>
@@ -78,69 +72,114 @@ export default function HospitalCard({ hospital_ID }: any) {
 			<Text size='xs'>{feature.label}</Text>
 		</Center>
 	));
+	console.log('hsp id');
+	console.log(hospital_ID);
 
-	const authToken = getCookie('token');
-	if (authToken) {
-		const { isLoading, error, data } = useQuery('myRecords', async () => {
-			const { data } = await axios.post(`/api/hospitals/${hospital_ID}`, {
-				token: authToken,
-			});
-			return data;
+	console.log('patient id');
+	console.log(patientID);
+
+	console.log('permissions');
+	console.log(permissions);
+
+	async function changeAccess(patientID: string, accessType: string) {
+		await axios.post(`/api/hospitals/access/${hospital_ID}`, {
+			token: authToken,
+			patientID,
+			email,
+			accessType,
 		});
-		console.log('hospital');
-		console.log(data);
+		const { data } = await axios.post(`/api/users/${patientID}`, {
+			token: authToken,
+			patientID: patientID,
+			email: email,
+		});
+
+		if (data) {
+			console.log('User Object');
+			console.log(data);
+			if (setPermissions) setPermissions(data.response.permissions);
+		}
 	}
+
+	// if (authToken) {
+	const { isLoading, error, data } = useQuery(`${hospital_ID}`, async () => {
+		const { data } = await axios.post(`/api/hospitals/${hospital_ID}`, {
+			token: authToken,
+			patientID,
+			email,
+		});
+		return data;
+	});
 
 	return (
 		<Card withBorder radius='md' className={classes.card}>
 			<Card.Section className={classes.imageSection}>
 				<Image src='https://i.imgur.com/09XGozT.jpeg' alt='' />
 			</Card.Section>
-
-			<Group position='apart' mt='md'>
-				<div>
-					<Text weight={500}>Hospital Name</Text>
-					{/* <Text size="xs" color="dimmed">
+			{isLoading && <Text>Loading</Text>}
+			{data && (
+				<>
+					<Group position='apart' mt='md'>
+						<div>
+							<Text weight={500} transform='uppercase'>
+								{`${data.response.hospital_name}`}
+							</Text>
+							{/* <Text size="xs" color="dimmed">
             Free recharge at any station
           </Text> */}
-				</div>
-				<Badge variant='light' color={'green'}>
-					Access Granted
-				</Badge>
-			</Group>
+						</div>
+						<Badge
+							variant='light'
+							color={permissions.denied.includes(hospital_ID) ? 'red' : 'green'}
+						>
+							{permissions.denied.includes(hospital_ID)
+								? 'Access Denied'
+								: 'Access Granted'}
+						</Badge>
+					</Group>
 
-			<Card.Section className={classes.section} mt='md'>
-				<Text size='sm' color='dimmed' className={classes.label}>
-					Contact Information
-				</Text>
-
-				<Group spacing={8} mb={-8}>
-					{features}
-				</Group>
-			</Card.Section>
-
-			<Card.Section className={classes.section}>
-				<Group position='apart'>
-					<div>
-						<Text size='lg' weight={700} sx={{ lineHeight: 1 }}>
-							Change Access
+					<Card.Section className={classes.section} mt='md'>
+						<Text size='sm' color='dimmed' className={classes.label}>
+							Contact Information
 						</Text>
-						{/* <Text size="sm" color="dimmed" weight={500} sx={{ lineHeight: 1 }} mt={3}>
+
+						<Group spacing={8} mb={-8}>
+							{features}
+						</Group>
+					</Card.Section>
+
+					<Card.Section className={classes.section}>
+						<Group position='apart'>
+							<div>
+								<Text size='lg' weight={700} sx={{ lineHeight: 1 }}>
+									Change Access
+								</Text>
+								{/* <Text size="sm" color="dimmed" weight={500} sx={{ lineHeight: 1 }} mt={3}>
               per day
             </Text> */}
-					</div>
+							</div>
 
-					<Switch
-						size='md'
-						onLabel='Granted'
-						offLabel='Denied'
-						// label="Grant/Revoke"
-						color='lime'
-						checked={checked}
-						onChange={(event) => setChecked(event.currentTarget.checked)}
-					/>
-				</Group>
-			</Card.Section>
+							<Switch
+								size='md'
+								onLabel='Granted'
+								offLabel='Denied'
+								// label="Grant/Revoke"
+								color='lime'
+								checked={
+									permissions.denied.includes(hospital_ID) ? false : checked
+								}
+								onChange={(event) => {
+									const accessType = permissions.denied.includes(hospital_ID)
+										? 'grant'
+										: 'suspend';
+									setChecked(event.currentTarget.checked);
+									changeAccess(patientID, accessType);
+								}}
+							/>
+						</Group>
+					</Card.Section>
+				</>
+			)}
 		</Card>
 	);
 }

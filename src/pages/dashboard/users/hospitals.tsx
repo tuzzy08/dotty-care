@@ -27,8 +27,6 @@ export default function HospitalsPage({ user }: PageProps) {
 	});
 
 	if (data) {
-		console.log('hospitals list');
-		console.log(data.response);
 		dataAsObjects = data.response.map((item: string) => JSON.parse(item));
 	}
 
@@ -45,7 +43,13 @@ export default function HospitalsPage({ user }: PageProps) {
 				/>
 				{/* <HospitalList data={data} /> */}
 				{isLoading && <Text>Loading</Text>}
-				{dataAsObjects && <HospitalList data={dataAsObjects} />}
+				{dataAsObjects && (
+					<HospitalList
+						data={dataAsObjects}
+						patientID={`${user.user_metadata.patientID}`}
+						email={user.email}
+					/>
+				)}
 			</Group>
 		</Container>
 	);

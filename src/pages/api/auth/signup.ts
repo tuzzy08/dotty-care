@@ -67,7 +67,7 @@ export default async function handler(
 				);
 				console.log('token before return');
 				console.log(token);
-				return token;
+				res.status(200).send(token);
 			})
 			.catch((error) => {
 				console.log(error);

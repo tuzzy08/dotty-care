@@ -117,7 +117,7 @@ function sortData(
 	);
 }
 
-export default function HospitalList({ data }: TableSortProps) {
+export default function HospitalList({ data, patientID, email }: any) {
 	const [opened, setOpened] = useState(false);
 	const [search, setSearch] = useState('');
 	const [hospital, setHospital] = useState<string | null>(null);
@@ -140,7 +140,7 @@ export default function HospitalList({ data }: TableSortProps) {
 		);
 	};
 
-	const rows = sortedData.map((row) => (
+	const rows = sortedData.map((row: any) => (
 		<tr key={row.hospital_name}>
 			<td>{row.hospital_name}</td>
 			{/* <td>{row.email}</td> */}
@@ -175,7 +175,11 @@ export default function HospitalList({ data }: TableSortProps) {
 			}}
 		>
 			<Modal opened={opened} onClose={() => setOpened(false)}>
-				<HospitalCard hospital_ID={hospital} />
+				<HospitalCard
+					hospital_ID={hospital}
+					patientID={patientID}
+					email={email}
+				/>
 			</Modal>
 			<ScrollArea>
 				<Text size={'md'} align={'center'} weight={'bold'} pb={25}>

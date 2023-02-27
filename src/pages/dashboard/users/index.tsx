@@ -1,7 +1,6 @@
 import { createServerSupabaseClient } from '@supabase/auth-helpers-nextjs';
 import { GetServerSidePropsContext } from 'next';
 import { Container, Group } from '@mantine/core';
-import { getCookie } from 'cookies-next';
 import { dehydrate, QueryClient, useQuery } from 'react-query';
 import axios from 'axios';
 import { PageProps } from '../types';
@@ -19,7 +18,7 @@ IndexPage.getLayout = function getLayout(page: any) {
 export default function IndexPage({ user }: PageProps) {
 	// console.log(user);
 	// const authToken = getCookie('token');
-	const { authToken } = useAuth();
+	const { authToken, permissions, setPermissions } = useAuth();
 	console.log('Auth Token');
 	console.log(authToken);
 	if (authToken) {
@@ -56,6 +55,7 @@ export default function IndexPage({ user }: PageProps) {
 		if (data) {
 			console.log('User Object');
 			console.log(data);
+			if (setPermissions) setPermissions(data.response.permissions);
 		}
 	}
 

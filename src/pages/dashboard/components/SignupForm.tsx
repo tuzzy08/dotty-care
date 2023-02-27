@@ -75,7 +75,6 @@ export default function SignupForm({ setVisibleForm }: any) {
 	} = useForm<Inputs>();
 	//TODO: USE RIGHT INPUT PROP TYPES
 	const handleSignup: SubmitHandler<Inputs> = async (form_data) => {
-		console.log(form_data);
 		const id = `${uuidv4()}`;
 		if (signUp) {
 			const signupData: SignupData = {
@@ -100,17 +99,20 @@ export default function SignupForm({ setVisibleForm }: any) {
 
 			try {
 				const data = await signUp(signupData);
-				if (data && form_data.accountType === 'Patient') {
+				if (
+					data !== null &&
+					data !== undefined &&
+					form_data.accountType === 'Patient'
+				) {
 					// Call api route to register user
 					const { data: token } = await axios.post('/api/auth/signup', {
 						id,
 						fullname: form_data.name,
 						email: form_data.email,
 					});
-					if (token && setAuthToken) {
-						setAuthToken(token.token);
+					if (data && setAuthToken) {
+						setAuthToken(token);
 					}
-					console.log(token.token);
 				}
 			} catch (error) {
 				console.log(error);

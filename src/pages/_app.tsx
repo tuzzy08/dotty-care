@@ -22,11 +22,7 @@ export default function App(props: AppProps | any) {
 		() =>
 			new QueryClient({
 				defaultOptions: {
-					queries: {
-						refetchOnWindowFocus: false,
-						staleTime: 3600000,
-						cacheTime: 3600000,
-					},
+					queries: {},
 				},
 			})
 	);
