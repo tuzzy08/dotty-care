@@ -63,14 +63,11 @@ export default function LoginForm({ setVisibleForm }: any) {
 					password: form_data.password,
 				});
 				// Setup account on chain
-				if (
-					response &&
-					response.user?.user_metadata.accountType === 'Patient'
-				) {
+				if (response) {
 					const { user } = response;
 					// Call api route to register user or get token
 					const { data: userToken } = await axios.post('/api/auth/login', {
-						patientID: user?.user_metadata.patientID,
+						id: user?.user_metadata.id,
 						email: form_data.email,
 					});
 					// console.log('token in login component');

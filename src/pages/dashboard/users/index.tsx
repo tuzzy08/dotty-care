@@ -16,7 +16,7 @@ IndexPage.getLayout = function getLayout(page: any) {
 };
 
 export default function IndexPage({ user }: PageProps) {
-	// console.log(user);
+	console.log(user);
 	// const authToken = getCookie('token');
 	const { authToken, permissions, setPermissions } = useAuth();
 	console.log('Auth Token');
@@ -24,10 +24,10 @@ export default function IndexPage({ user }: PageProps) {
 	if (authToken) {
 		const { isLoading, error, data } = useQuery('myRecords', async () => {
 			const { data } = await axios.post(
-				`/api/records/${user.user_metadata.patientID}`,
+				`/api/records/${user.user_metadata.id}`,
 				{
 					token: authToken,
-					patientID: user.user_metadata.patientID,
+					id: user.user_metadata.id,
 					email: user.email,
 				}
 			);
@@ -41,14 +41,11 @@ export default function IndexPage({ user }: PageProps) {
 
 	if (authToken) {
 		const { data } = useQuery('userObject', async () => {
-			const { data } = await axios.post(
-				`/api/users/${user.user_metadata.patientID}`,
-				{
-					token: authToken,
-					patientID: user.user_metadata.patientID,
-					email: user.email,
-				}
-			);
+			const { data } = await axios.post(`/api/users/${user.user_metadata.id}`, {
+				token: authToken,
+				id: user.user_metadata.id,
+				email: user.email,
+			});
 
 			return data;
 		});
@@ -93,12 +90,12 @@ export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
 			},
 		};
 
-	const patientID = session.user.user_metadata.patientID;
+	const id = session.user.user_metadata.id;
 	const email = session.user.email;
 	// const queryClient = new QueryClient();
 	// await queryClient.prefetchQuery('userObject', async () => {
-	// 	const { data } = await axios.post(`/api/users/${patientID}`, {
-	// 		patientID,
+	// 	const { data } = await axios.post(`/api/users/${id}`, {
+	// 		id,
 	// 		email,
 	// 	});
 	// 	console.log(data);

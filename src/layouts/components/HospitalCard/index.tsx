@@ -62,7 +62,7 @@ const mockdata = [
 	// { label: 'Electric', icon: IconGasStation },
 ];
 
-export default function HospitalCard({ hospital_ID, patientID, email }: any) {
+export default function HospitalCard({ hospital_ID, id, email }: any) {
 	const { classes } = useStyles();
 	const { authToken, permissions, setPermissions } = useAuth();
 	const [checked, setChecked] = useState(true);
@@ -76,21 +76,21 @@ export default function HospitalCard({ hospital_ID, patientID, email }: any) {
 	console.log(hospital_ID);
 
 	console.log('patient id');
-	console.log(patientID);
+	console.log(id);
 
 	console.log('permissions');
 	console.log(permissions);
 
-	async function changeAccess(patientID: string, accessType: string) {
+	async function changeAccess(id: string, accessType: string) {
 		await axios.post(`/api/hospitals/access/${hospital_ID}`, {
 			token: authToken,
-			patientID,
+			id,
 			email,
 			accessType,
 		});
-		const { data } = await axios.post(`/api/users/${patientID}`, {
+		const { data } = await axios.post(`/api/users/${id}`, {
 			token: authToken,
-			patientID: patientID,
+			id: id,
 			email: email,
 		});
 
@@ -105,7 +105,7 @@ export default function HospitalCard({ hospital_ID, patientID, email }: any) {
 	const { isLoading, error, data } = useQuery(`${hospital_ID}`, async () => {
 		const { data } = await axios.post(`/api/hospitals/${hospital_ID}`, {
 			token: authToken,
-			patientID,
+			id,
 			email,
 		});
 		return data;
@@ -173,7 +173,7 @@ export default function HospitalCard({ hospital_ID, patientID, email }: any) {
 										? 'grant'
 										: 'suspend';
 									setChecked(event.currentTarget.checked);
-									changeAccess(patientID, accessType);
+									changeAccess(id, accessType);
 								}}
 							/>
 						</Group>

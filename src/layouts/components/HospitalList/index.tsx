@@ -117,7 +117,7 @@ function sortData(
 	);
 }
 
-export default function HospitalList({ data, patientID, email }: any) {
+export default function HospitalList({ data, id, email }: any) {
 	const [opened, setOpened] = useState(false);
 	const [search, setSearch] = useState('');
 	const [hospital, setHospital] = useState<string | null>(null);
@@ -175,11 +175,7 @@ export default function HospitalList({ data, patientID, email }: any) {
 			}}
 		>
 			<Modal opened={opened} onClose={() => setOpened(false)}>
-				<HospitalCard
-					hospital_ID={hospital}
-					patientID={patientID}
-					email={email}
-				/>
+				<HospitalCard hospital_ID={hospital} id={id} email={email} />
 			</Modal>
 			<ScrollArea>
 				<Text size={'md'} align={'center'} weight={'bold'} pb={25}>

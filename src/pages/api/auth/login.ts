@@ -15,7 +15,7 @@ export default async function handler(
 	if (token) {
 		const { data } = await axios.post(
 			'http://localhost:8801/user/enroll',
-			{ id: req.body.patientID, secret: req.body.email },
+			{ id: req.body.id, secret: req.body.email },
 			{
 				headers: {
 					Authorization: `Bearer ${token}`,

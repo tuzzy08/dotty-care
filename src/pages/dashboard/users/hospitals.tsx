@@ -20,7 +20,7 @@ export default function HospitalsPage({ user }: PageProps) {
 	const { isLoading, error, data } = useQuery('hospitals', async () => {
 		const { data } = await axios.post(`/api/hospitals`, {
 			token: authToken,
-			patientID: user.user_metadata.patientID,
+			id: user.user_metadata.id,
 			email: user.email,
 		});
 		return data;
@@ -46,7 +46,7 @@ export default function HospitalsPage({ user }: PageProps) {
 				{dataAsObjects && (
 					<HospitalList
 						data={dataAsObjects}
-						patientID={`${user.user_metadata.patientID}`}
+						id={`${user.user_metadata.id}`}
 						email={user.email}
 					/>
 				)}
