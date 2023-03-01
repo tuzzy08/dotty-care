@@ -10,10 +10,12 @@ import {
 	Checkbox,
 	Flex,
 	Group,
+	Modal,
 	Stack,
 	Table,
 	Text,
 	TextInput,
+	useMantineTheme,
 } from '@mantine/core';
 import {} from '@tabler/icons';
 import { GetServerSidePropsContext } from 'next';
@@ -23,17 +25,20 @@ import axios from 'axios';
 import { useAuth } from '../../../lib/auth';
 import { PageProps } from '../types';
 import { useQuery } from 'react-query';
+import ParamedicNote from '../components/ParamedicNote';
 
 type Inputs = {
 	patientID: string;
 };
 
-NewEventPage.getLayout = function getLayout(page: any) {
+Index.getLayout = function getLayout(page: any) {
 	return <Layout variant={'ems'}>{page}</Layout>;
 };
 
-export default function NewEventPage({ user }: PageProps) {
-	const [patientInfo, setpatientInfo] = useState<any | null>(null);
+export default function Index({ user }: PageProps) {
+	const theme = useMantineTheme();
+	const [opened, setOpened] = useState(false);
+	const [patientInfo, setpatientInfo] = useState<any>('');
 	const { authToken } = useAuth();
 	// Get Notes
 	// if (authToken) {
@@ -56,17 +61,7 @@ export default function NewEventPage({ user }: PageProps) {
 		});
 		setpatientInfo(data);
 	};
-	// dynamic import
-	const Rte = useMemo(
-		() =>
-			dynamic(
-				() => import('@mantine/rte').then((RichTextEditor) => RichTextEditor),
-				{ ssr: false }
-			),
-		[]
-	);
-	const initialValue = '<p>Create a new  <b>note</b>.</p>';
-	const [value, onChange] = useState(initialValue);
+
 	const {
 		register,
 		handleSubmit,
@@ -106,6 +101,27 @@ export default function NewEventPage({ user }: PageProps) {
 				align={'center'}
 			> */}
 			{/* <Center> */}
+			<Modal
+				opened={opened}
+				size='lg'
+				closeButtonLabel='Close Note'
+				closeOnEscape={false}
+				closeOnClickOutside={false}
+				overlayColor={
+					theme.colorScheme === 'dark'
+						? theme.colors.dark[9]
+						: theme.colors.gray[2]
+				}
+				overlayOpacity={0.55}
+				overlayBlur={3}
+				onClose={() => setOpened(false)}
+				title='Create new note'
+			>
+				<ParamedicNote
+					patient_ID={`${patientInfo.patient_ID}`}
+					paramedic={user}
+				/>
+			</Modal>
 
 			<Card
 				shadow='sm'
@@ -152,7 +168,9 @@ export default function NewEventPage({ user }: PageProps) {
 								<td>{patientInfo.full_name}</td>
 								{/* <td></td> */}
 								<td>
-									<Button variant='outline'>Create Record</Button>
+									<Button onClick={() => setOpened(true)} variant='outline'>
+										Create Record
+									</Button>
 								</td>
 							</tr>
 						) : (

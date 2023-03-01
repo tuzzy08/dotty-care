@@ -1,0 +1,96 @@
+import {
+	TextInput,
+	Text,
+	Textarea,
+	Box,
+	Checkbox,
+	Button,
+	Stack,
+} from '@mantine/core';
+import axios from 'axios';
+// import { RichTextEditor } from '@mantine/tiptap';
+import dynamic from 'next/dynamic';
+import { useMemo, useState } from 'react';
+import { useForm, SubmitHandler } from 'react-hook-form';
+import { v4 as uuidv4 } from 'uuid';
+
+type Inputs = {
+	patient_ID: string;
+	vitals: string[];
+	additionalInfo: string;
+	paramedicName: string;
+};
+
+export default function ParamedicNote({ patient_ID, paramedic }: any) {
+	console.log('Paramedic');
+	console.log(paramedic);
+	// dynamic import
+	const Rte = useMemo(
+		() =>
+			dynamic(
+				() => import('@mantine/rte').then((RichTextEditor) => RichTextEditor),
+				{ ssr: false }
+			),
+		[]
+	);
+
+	const submitHandler: SubmitHandler<Inputs> = async (form_data) => {
+		console.log(form_data);
+		const noteID = `${uuidv4()}`;
+		const { data } = await axios.post('/api/notes/create', {
+			noteID,
+			patient_ID,
+			id: paramedic.user_metadata.id,
+			paramedicName: form_data.paramedicName,
+			email: paramedic.email,
+			paramedicNote: form_data.additionalInfo,
+		});
+	};
+
+	const {
+		register,
+		handleSubmit,
+		formState: { errors },
+	} = useForm<Inputs>();
+
+	const initialValue = '<p>Create a new  <b>note</b>.</p>';
+	const [value, onChange] = useState(initialValue);
+	return (
+		<form onSubmit={handleSubmit(submitHandler)}>
+			<Stack p={'lg'} spacing={'xl'}>
+				<TextInput
+					label='Patient ID'
+					value={`${patient_ID}`}
+					// placeholder={`${patient_ID}`}
+					readOnly={true}
+					{...register('patient_ID')}
+				/>
+				<TextInput label='Paramedic Name' {...register('paramedicName')} />
+				{/* <Checkbox.Group
+					defaultValue={['react']}
+					label='Vitals'
+					// description='This is anonymous'
+					withAsterisk
+					{...register('vitals')}
+				>
+					<Checkbox value='option1' label='Option 1' />
+					<Checkbox value='option2' label='Option 2' />
+					<Checkbox value='option3' label='Option 3' />
+					<Checkbox value='option4' label='Option 4' />
+				</Checkbox.Group> */}
+				<Textarea
+					placeholder='Your comment'
+					label='Your comment'
+					withAsterisk
+					{...register('additionalInfo')}
+				/>
+				{/* <Box style={{ overflow: 'scroll', maxHeight: 250 }}>
+					<Rte value={value} onChange={onChange} />
+				</Box> */}
+				<Button variant='outline' mt='sm' size='md' type='submit'>
+					Submit
+				</Button>
+			</Stack>
+		</form>
+	);
+}

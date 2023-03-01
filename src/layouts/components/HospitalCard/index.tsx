@@ -95,8 +95,6 @@ export default function HospitalCard({ hospital_ID, id, email }: any) {
 		});
 
 		if (data) {
-			console.log('User Object');
-			console.log(data);
 			if (setPermissions) setPermissions(data.response.permissions);
 		}
 	}
