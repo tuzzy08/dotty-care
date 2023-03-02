@@ -1,58 +1,29 @@
-import { useState, useMemo } from 'react';
-import dynamic from 'next/dynamic';
 import { createServerSupabaseClient } from '@supabase/auth-helpers-nextjs';
-import {
-	Badge,
-	Box,
-	Button,
-	Card,
-	Center,
-	Checkbox,
-	Flex,
-	Group,
-	Stack,
-	Text,
-	TextInput,
-} from '@mantine/core';
+import { Card, Text } from '@mantine/core';
 import {} from '@tabler/icons';
 import { GetServerSidePropsContext } from 'next';
-import { useForm, SubmitHandler } from 'react-hook-form';
 import { Layout } from '../../../../layouts';
+import NotesList from '../../components/NotesTable';
+import { PageProps } from '../../types';
+import { useQuery } from 'react-query';
+import axios from 'axios';
 
-type Inputs = {
-	email: string;
-	password: string;
-};
-
-NewEventPage.getLayout = function getLayout(page: any) {
+EventsList.getLayout = function getLayout(page: any) {
 	return <Layout variant={'ems'}>{page}</Layout>;
 };
 
-export default function NewEventPage() {
-	// dynamic import
-	const Rte = useMemo(
-		() =>
-			dynamic(
-				() => import('@mantine/rte').then((RichTextEditor) => RichTextEditor),
-				{ ssr: false }
-			),
-		[]
-	);
-	const initialValue = '<p>Create a new  <b>note</b>.</p>';
-	const [value, onChange] = useState(initialValue);
-	const {
-		register,
-		handleSubmit,
-		formState: { errors },
-	} = useForm<Inputs>();
-
-	const onFormSubmit: SubmitHandler<Inputs> = async (form_data) => {
-		try {
-			console.log(form_data);
-		} catch (error) {
-			console.log(error);
-		}
-	};
+export default function EventsList({ user }: PageProps) {
+	const { isLoading, error, data } = useQuery('myNotes', async () => {
+		const { data } = await axios.post(`/api/notes/${user.user_metadata.id}`, {
+			// token: authToken,
+			id: user.user_metadata.id,
+			email: user.email,
+		});
+		return data;
+	});
+	if (data) {
+		console.log(data.response);
+	}
 
 	return (
 		<>
@@ -76,12 +47,13 @@ export default function NewEventPage() {
 				// style={{ overflow: 'scroll' }}
 				radius={'md'}
 				p='md'
-				w='600px'
+				w='800px'
 				mah={600}
 				withBorder
 				mt='xs'
 			>
-				{}
+				{isLoading && <Text>Loading</Text>}
+				{data && <NotesList data={data.response} />}
 			</Card>
 			{/* </Center> */}
 			{/* </Flex> */}
