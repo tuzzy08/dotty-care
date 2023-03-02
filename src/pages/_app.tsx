@@ -1,17 +1,13 @@
 import { useState } from 'react';
 import { AppProps } from 'next/app';
 import Head from 'next/head';
-import {
-	Hydrate,
-	QueryClient,
-	QueryClientProvider,
-	useQuery,
-} from 'react-query';
+import { Hydrate, QueryClient, QueryClientProvider } from 'react-query';
 import {
 	MantineProvider,
 	ColorSchemeProvider,
 	ColorScheme,
 } from '@mantine/core';
+import { NotificationsProvider } from '@mantine/notifications';
 import { createBrowserSupabaseClient } from '@supabase/auth-helpers-nextjs';
 import { SessionContextProvider, Session } from '@supabase/auth-helpers-react';
 import { AuthProvider } from '../contexts/AuthContext';
@@ -45,18 +41,20 @@ export default function App(props: AppProps | any) {
 					withNormalizeCSS
 					theme={{ colorScheme }}
 				>
-					<QueryClientProvider client={queryClient}>
-						<SessionContextProvider
-							supabaseClient={supabase}
-							initialSession={pageProps.initialSession}
-						>
-							<AuthProvider>
-								<Hydrate state={pageProps.dehydratedState}>
-									{getLayout(<Component {...pageProps} />)}
-								</Hydrate>
-							</AuthProvider>
-						</SessionContextProvider>
-					</QueryClientProvider>
+					<NotificationsProvider position='top-right' zIndex={2077}>
+						<QueryClientProvider client={queryClient}>
+							<SessionContextProvider
+								supabaseClient={supabase}
+								initialSession={pageProps.initialSession}
+							>
+								<AuthProvider>
+									<Hydrate state={pageProps.dehydratedState}>
+										{getLayout(<Component {...pageProps} />)}
+									</Hydrate>
+								</AuthProvider>
+							</SessionContextProvider>
+						</QueryClientProvider>
+					</NotificationsProvider>
 				</MantineProvider>
 			</ColorSchemeProvider>
 			{/* </UserProvider> */}

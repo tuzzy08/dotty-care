@@ -7,9 +7,12 @@ import {
 	Button,
 	Stack,
 } from '@mantine/core';
+import { showNotification } from '@mantine/notifications';
+import { IconCheck } from '@tabler/icons';
 import axios from 'axios';
 // import { RichTextEditor } from '@mantine/tiptap';
 import dynamic from 'next/dynamic';
+import { useRouter } from 'next/router';
 import { useMemo, useState } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { v4 as uuidv4 } from 'uuid';
@@ -21,9 +24,13 @@ type Inputs = {
 	paramedicName: string;
 };
 
-export default function ParamedicNote({ patient_ID, paramedic }: any) {
-	console.log('Paramedic');
-	console.log(paramedic);
+export default function ParamedicNote({
+	patient_ID,
+	paramedic,
+	setOpened,
+	setpatientInfo,
+}: any) {
+	const router = useRouter();
 	// dynamic import
 	const Rte = useMemo(
 		() =>
@@ -35,7 +42,6 @@ export default function ParamedicNote({ patient_ID, paramedic }: any) {
 	);
 
 	const submitHandler: SubmitHandler<Inputs> = async (form_data) => {
-		console.log(form_data);
 		const noteID = `${uuidv4()}`;
 		const { data } = await axios.post('/api/notes/create', {
 			noteID,
@@ -45,6 +51,17 @@ export default function ParamedicNote({ patient_ID, paramedic }: any) {
 			email: paramedic.email,
 			paramedicNote: form_data.additionalInfo,
 		});
+		if (data) {
+			setOpened(false);
+			setpatientInfo('');
+			showNotification({
+				title: 'Fast Health',
+				message: 'Note saved successfully',
+				color: 'green',
+				icon: <IconCheck />,
+				autoClose: 5000,
+			});
+		}
 	};
 
 	const {
@@ -61,7 +78,6 @@ export default function ParamedicNote({ patient_ID, paramedic }: any) {
 				<TextInput
 					label='Patient ID'
 					value={`${patient_ID}`}
-					// placeholder={`${patient_ID}`}
 					readOnly={true}
 					{...register('patient_ID')}
 				/>
@@ -87,7 +103,13 @@ export default function ParamedicNote({ patient_ID, paramedic }: any) {
 				{/* <Box style={{ overflow: 'scroll', maxHeight: 250 }}>
 					<Rte value={value} onChange={onChange} />
 				</Box> */}
-				<Button variant='outline' mt='sm' size='md' type='submit'>
+				<Button
+					variant='outline'
+					mt='sm'
+					size='md'
+					type='submit'
+					style={{ alignSelf: 'center' }}
+				>
 					Submit
 				</Button>
 			</Stack>

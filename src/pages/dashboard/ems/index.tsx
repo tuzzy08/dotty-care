@@ -59,22 +59,19 @@ export default function Index({ user }: PageProps) {
 			id: user.user_metadata.id,
 			email: user.email,
 		});
-		setpatientInfo(data);
+		data && setpatientInfo(data);
+		reset((formValues) => ({
+			...formValues,
+			patientID: '',
+		}));
 	};
 
 	const {
 		register,
+		reset,
 		handleSubmit,
 		formState: { errors },
 	} = useForm<Inputs>();
-
-	const onFormSubmit: SubmitHandler<Inputs> = async (form_data) => {
-		try {
-			console.log(form_data);
-		} catch (error) {
-			console.log(error);
-		}
-	};
 
 	const ths = (
 		<tr>
@@ -87,20 +84,6 @@ export default function Index({ user }: PageProps) {
 
 	return (
 		<Stack spacing={'xl'}>
-			{/* <Flex
-				// sx={() => ({
-				// 	display: 'flex',
-				// 	flexDirection: 'column',
-				// 	width: '60vw',
-				// 	justifyContent: 'center',
-				// 	alignItems: 'center',
-				// })}
-				w={'60vw'}
-				direction='column'
-				justify={'center'}
-				align={'center'}
-			> */}
-			{/* <Center> */}
 			<Modal
 				opened={opened}
 				size='lg'
@@ -120,12 +103,13 @@ export default function Index({ user }: PageProps) {
 				<ParamedicNote
 					patient_ID={`${patientInfo.patient_ID}`}
 					paramedic={user}
+					setOpened={setOpened}
+					setpatientInfo={setpatientInfo}
 				/>
 			</Modal>
 
 			<Card
 				shadow='sm'
-				// style={{ overflow: 'scroll' }}
 				radius={'md'}
 				p='md'
 				w='650px'
@@ -177,11 +161,8 @@ export default function Index({ user }: PageProps) {
 							<></>
 						)}
 					</tbody>
-					{/* {...rows} */}
 				</Table>
 			</Card>
-			{/* </Center> */}
-			{/* </Flex> */}
 		</Stack>
 	);
 }
