@@ -15,7 +15,6 @@ EventsList.getLayout = function getLayout(page: any) {
 export default function EventsList({ user }: PageProps) {
 	const { isLoading, error, data } = useQuery('myNotes', async () => {
 		const { data } = await axios.post(`/api/notes/${user.user_metadata.id}`, {
-			// token: authToken,
 			id: user.user_metadata.id,
 			email: user.email,
 		});
@@ -27,21 +26,6 @@ export default function EventsList({ user }: PageProps) {
 
 	return (
 		<>
-			{/* <Flex
-				// sx={() => ({
-				// 	display: 'flex',
-				// 	flexDirection: 'column',
-				// 	width: '60vw',
-				// 	justifyContent: 'center',
-				// 	alignItems: 'center',
-				// })}
-				w={'60vw'}
-				direction='column'
-				justify={'center'}
-				align={'center'}
-			> */}
-			{/* <Center> */}
-
 			<Card
 				shadow='sm'
 				// style={{ overflow: 'scroll' }}
@@ -53,10 +37,8 @@ export default function EventsList({ user }: PageProps) {
 				mt='xs'
 			>
 				{isLoading && <Text>Loading</Text>}
-				{data && <NotesList data={data.response} />}
+				{data && <NotesList list={data.response} />}
 			</Card>
-			{/* </Center> */}
-			{/* </Flex> */}
 		</>
 	);
 }

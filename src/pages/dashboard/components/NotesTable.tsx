@@ -119,12 +119,12 @@ function sortData(
 	);
 }
 
-export default function NotesList({ data }: any) {
-	const parsedData = data.map((item: string) => JSON.parse(item));
+export default function NotesList({ list }: any) {
+	const parsedData = list.map((item: string) => JSON.parse(item));
 	const [note, setNote] = useState<RowData | null>(null);
 	console.log('data');
 
-	console.log(data);
+	console.log(list);
 	const [opened, setOpened] = useState(false);
 	const [search, setSearch] = useState('');
 	const [sortedData, setSortedData] = useState(parsedData);
@@ -176,14 +176,12 @@ export default function NotesList({ data }: any) {
 	return (
 		<Box
 			sx={{
-				// width: '70vw',
 				height: '500px',
 				padding: '10px',
 			}}
 		>
 			<Modal opened={opened} onClose={() => setOpened(false)}>
-				{/* <HospitalCard hospital_ID={hospital} id={id} email={email} /> */}
-				<Note data={note} />
+				<Note note={note} />
 			</Modal>
 
 			<Text size={'md'} align={'center'} weight={'bold'} pb={25}>
@@ -196,49 +194,48 @@ export default function NotesList({ data }: any) {
 				value={search}
 				onChange={handleSearchChange}
 			/>
-
-			<Table
-				horizontalSpacing='xs'
-				verticalSpacing='xs'
-				sx={{
-					// tableLayout: 'fixed',
-					height: '50px',
-					overflowY: 'scroll',
-				}}
-			>
-				<thead>
-					<tr>
-						<Th
-							sorted={sortBy === 'patientName'}
-							reversed={reverseSortDirection}
-							onSort={() => setSorting('patientName')}
-						>
-							Patient Name
-						</Th>
-						<Th
-							sorted={sortBy === 'paramedicName'}
-							reversed={reverseSortDirection}
-						>
-							Paramedic Name
-						</Th>
-						<Th>Date Created</Th>
-						<Th>Action</Th>
-					</tr>
-				</thead>
-				<tbody>
-					{rows.length > 0 ? (
-						rows
-					) : (
+			<ScrollArea style={{ height: 250 }}>
+				<Table
+					horizontalSpacing='xs'
+					verticalSpacing='xs'
+					sx={{
+						tableLayout: 'fixed',
+					}}
+				>
+					<thead>
 						<tr>
-							<td colSpan={Object.keys(parsedData[0]).length}>
-								<Text weight={500} align='center'>
-									Nothing found
-								</Text>
-							</td>
+							<Th
+								sorted={sortBy === 'patientName'}
+								reversed={reverseSortDirection}
+								onSort={() => setSorting('patientName')}
+							>
+								Patient Name
+							</Th>
+							<Th
+								sorted={sortBy === 'paramedicName'}
+								reversed={reverseSortDirection}
+							>
+								Paramedic Name
+							</Th>
+							<Th>Date Created</Th>
+							<Th>Action</Th>
 						</tr>
-					)}
-				</tbody>
-			</Table>
+					</thead>
+					<tbody>
+						{rows.length > 0 ? (
+							rows
+						) : (
+							<tr>
+								<td colSpan={Object.keys(parsedData[0]).length}>
+									<Text weight={500} align='center'>
+										Nothing found
+									</Text>
+								</td>
+							</tr>
+						)}
+					</tbody>
+				</Table>
+			</ScrollArea>
 		</Box>
 	);
 }

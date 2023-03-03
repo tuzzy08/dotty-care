@@ -42,8 +42,12 @@ export interface NoteProps {
 	createdAt: string;
 }
 
-export default function Note(data: any) {
+export default function Note({
+	note: { paramedicID, paramedicName, paramedicNote },
+}: any) {
 	const { classes } = useStyles();
+	console.log('Data id');
+	console.log(paramedicID);
 	return (
 		<Paper withBorder radius='md' className={classes.card}>
 			<ThemeIcon
@@ -55,10 +59,10 @@ export default function Note(data: any) {
 				<IconColorSwatch size={28} stroke={1.5} />
 			</ThemeIcon>
 			<Text size='xl' weight={500} mt='md'>
-				{data.paramedicName}
+				{paramedicName}
 			</Text>
 			<Text size='sm' mt='sm' color='dimmed'>
-				{data.paramedicNote}
+				{paramedicNote}
 			</Text>
 		</Paper>
 	);
