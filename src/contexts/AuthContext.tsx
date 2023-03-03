@@ -14,6 +14,8 @@ import {
 } from '../lib/auth/auth.types';
 import { ROUTE_AUTH, accountDashboards, Dashboards } from '../config';
 import { deleteCookie } from 'cookies-next';
+import axios from 'axios';
+import { SignupData } from '../pages/dashboard/components/SignupForm';
 
 export type AuthResponse = {
 	user: User | null;
@@ -85,9 +87,7 @@ export function AuthProvider({ children }: any) {
 		});
 	}, []);
 
-	const signUp = async (
-		payload: SupabaseSignupPayload
-	): Promise<AuthResponse | null> => {
+	const signUp = async (payload: SignupData): Promise<AuthResponse | null> => {
 		let response = null;
 		try {
 			setLoading(true);
@@ -100,6 +100,17 @@ export function AuthProvider({ children }: any) {
 						'Signup successful. Please check your inbox for a confirmation email!',
 					type: 'success',
 				});
+				// if (payload.options) {
+				// 	const { data: token } = await axios.post('/api/auth/signup', {
+				// 		id: payload.options.data.id,
+				// 		fullname: payload.options.data.name,
+				// 		email: payload.email,
+				// 		accountType: payload.options.data.accountType,
+				// 	});
+				// 	if (token) {
+				// 		setAuthToken(token);
+				// 	}
+				// }
 				response = data;
 			}
 		} catch (error: any) {
@@ -137,7 +148,6 @@ export function AuthProvider({ children }: any) {
 	};
 
 	const signOut = async () => {
-		deleteCookie('token');
 		await supabase.auth.signOut();
 	};
 

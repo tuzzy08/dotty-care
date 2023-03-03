@@ -27,7 +27,7 @@ type Inputs = {
 export interface SignupData {
 	email: string;
 	password: string;
-	options: {
+	options?: {
 		data: {
 			id: string;
 			accountType: string;
@@ -90,6 +90,8 @@ export default function SignupForm({ setVisibleForm }: any) {
 			try {
 				const res = await signUp(signupData);
 				if (res) {
+					console.log('signup response');
+					console.log(res);
 					// Call api route to register user
 					const { data: token } = await axios.post('/api/auth/signup', {
 						id,
@@ -98,7 +100,8 @@ export default function SignupForm({ setVisibleForm }: any) {
 						accountType: form_data.accountType,
 					});
 					if (token && setAuthToken) {
-						setAuthToken(token);
+						console.log(token);
+						// setAuthToken(token);
 					}
 				}
 			} catch (error) {

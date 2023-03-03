@@ -42,14 +42,14 @@ export default function Index({ user }: PageProps) {
 	const { authToken } = useAuth();
 	// Get Notes
 	// if (authToken) {
-	const { isLoading, error, data } = useQuery('myNotes', async () => {
-		const { data } = await axios.post(`/api/notes/${user.user_metadata.id}`, {
-			// token: authToken,
-			id: user.user_metadata.id,
-			email: user.email,
-		});
-		return data;
-	});
+	// const { isLoading, error, data } = useQuery('myNotes', async () => {
+	// 	const { data } = await axios.post(`/api/notes/${user.user_metadata.id}`, {
+	// 		// token: authToken,
+	// 		id: user.user_metadata.id,
+	// 		email: user.email,
+	// 	});
+	// 	return data;
+	// });
 
 	// }
 
@@ -153,7 +153,7 @@ export default function Index({ user }: PageProps) {
 								{/* <td></td> */}
 								<td>
 									<Button onClick={() => setOpened(true)} variant='outline'>
-										Create Record
+										Create Note
 									</Button>
 								</td>
 							</tr>

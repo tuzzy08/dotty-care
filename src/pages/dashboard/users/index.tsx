@@ -16,7 +16,7 @@ IndexPage.getLayout = function getLayout(page: any) {
 };
 
 export default function IndexPage({ user }: PageProps) {
-	console.log(user);
+	// console.log(user);
 	// const authToken = getCookie('token');
 	const { authToken, permissions, setPermissions } = useAuth();
 	console.log('Auth Token');
@@ -52,7 +52,7 @@ export default function IndexPage({ user }: PageProps) {
 		if (data) {
 			console.log('User Object');
 			console.log(data);
-			if (setPermissions) setPermissions(data.response.permissions);
+			// if (setPermissions) setPermissions(data.response.permissions);
 		}
 	}
 

@@ -2,6 +2,7 @@ import {
 	TextInput,
 	Text,
 	Textarea,
+	LoadingOverlay,
 	Box,
 	Checkbox,
 	Button,
@@ -69,12 +70,12 @@ export default function ParamedicNote({
 		handleSubmit,
 		formState: { errors },
 	} = useForm<Inputs>();
+	const [visible, setVisible] = useState(false);
 
-	const initialValue = '<p>Create a new  <b>note</b>.</p>';
-	const [value, onChange] = useState(initialValue);
 	return (
 		<form onSubmit={handleSubmit(submitHandler)}>
 			<Stack p={'lg'} spacing={'xl'}>
+				<LoadingOverlay visible={visible} overlayBlur={2} />
 				<TextInput
 					label='Patient ID'
 					value={`${patient_ID}`}
@@ -109,6 +110,7 @@ export default function ParamedicNote({
 					size='md'
 					type='submit'
 					style={{ alignSelf: 'center' }}
+					onClick={() => setVisible((v) => !v)}
 				>
 					Submit
 				</Button>

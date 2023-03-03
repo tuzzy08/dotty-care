@@ -20,7 +20,7 @@ import {
 	IconChevronUp,
 	IconSearch,
 } from '@tabler/icons';
-import { RecordCard } from './RecordCard';
+import Note, { NoteProps } from './Note';
 
 const useStyles = createStyles((theme) => ({
 	th: {
@@ -47,8 +47,12 @@ const useStyles = createStyles((theme) => ({
 }));
 
 interface RowData {
-	paramedicName: string;
+	noteID: string;
+	patientID: string;
 	patientName: string;
+	paramedicID: string;
+	paramedicName: string;
+	paramedicNote: string;
 	createdAt: string;
 }
 
@@ -117,6 +121,7 @@ function sortData(
 
 export default function NotesList({ data }: any) {
 	const parsedData = data.map((item: string) => JSON.parse(item));
+	const [note, setNote] = useState<RowData | null>(null);
 	console.log('data');
 
 	console.log(data);
@@ -145,7 +150,7 @@ export default function NotesList({ data }: any) {
 		);
 	};
 
-	const rows = sortedData.map((row: any) => (
+	const rows = sortedData.map((row: NoteProps) => (
 		<tr key={row.patientName}>
 			<td>{row.patientName}</td>
 			<td>{row.paramedicName}</td>
@@ -155,6 +160,7 @@ export default function NotesList({ data }: any) {
 				{
 					<Button
 						onClick={() => {
+							setNote(row);
 							setOpened(true);
 						}}
 						variant='outline'
@@ -171,12 +177,13 @@ export default function NotesList({ data }: any) {
 		<Box
 			sx={{
 				// width: '70vw',
+				height: '500px',
 				padding: '10px',
 			}}
 		>
 			<Modal opened={opened} onClose={() => setOpened(false)}>
 				{/* <HospitalCard hospital_ID={hospital} id={id} email={email} /> */}
-				<RecordCard title='' description='' />
+				<Note data={note} />
 			</Modal>
 
 			<Text size={'md'} align={'center'} weight={'bold'} pb={25}>
@@ -189,13 +196,14 @@ export default function NotesList({ data }: any) {
 				value={search}
 				onChange={handleSearchChange}
 			/>
+
 			<Table
 				horizontalSpacing='xs'
 				verticalSpacing='xs'
 				sx={{
 					// tableLayout: 'fixed',
 					height: '50px',
-					overflow: 'scroll',
+					overflowY: 'scroll',
 				}}
 			>
 				<thead>
