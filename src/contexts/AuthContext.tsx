@@ -22,6 +22,15 @@ export type AuthResponse = {
 	session: Session | null;
 };
 
+async function getToken(id: string = '', email: string = '') {
+	const { data } = await axios.post('/api/auth/login', {
+		id,
+		email,
+	});
+
+	return data;
+}
+
 export type AuthContextProps = {
 	signUp: (payload: SupabaseSignupPayload) => Promise<AuthResponse | null>;
 	signIn: (payload: SupabaseSignInPayload) => Promise<AuthResponse | null>;
@@ -72,13 +81,33 @@ export function AuthProvider({ children }: any) {
 
 		// Listen for auth events such as sign in & sign out etc..
 		supabase.auth.onAuthStateChange(async (event, session) => {
+			console.log('Auth EVENT');
+			console.log(event);
+
 			const user = session?.user! ?? null;
 			const accountType: string = user?.user_metadata.accountType;
 			setUserLoading(false);
 			if (user) {
 				setUser(user);
 				setLoggedin(true);
-				router.push(`${accountDashboards[accountType as keyof Dashboards]}`); // Your users will automatically be redirected to the `/profile` page on logging in
+				if (event === 'SIGNED_IN') {
+					try {
+						const token = await getToken(user.user_metadata.id, user.email);
+						console.log('Retrieved Token');
+						console.log(token);
+
+						if (token) {
+							setAuthToken(token);
+							router.push(
+								`${accountDashboards[accountType as keyof Dashboards]}`
+							);
+						}
+					} catch (error) {
+						console.log(error);
+					}
+
+					// Your users will automatically be redirected to the `/profile` page on logging in
+				}
 			} else {
 				// new
 				setUser(null); // new: nullify the user object
@@ -100,17 +129,6 @@ export function AuthProvider({ children }: any) {
 						'Signup successful. Please check your inbox for a confirmation email!',
 					type: 'success',
 				});
-				// if (payload.options) {
-				// 	const { data: token } = await axios.post('/api/auth/signup', {
-				// 		id: payload.options.data.id,
-				// 		fullname: payload.options.data.name,
-				// 		email: payload.email,
-				// 		accountType: payload.options.data.accountType,
-				// 	});
-				// 	if (token) {
-				// 		setAuthToken(token);
-				// 	}
-				// }
 				response = data;
 			}
 		} catch (error: any) {

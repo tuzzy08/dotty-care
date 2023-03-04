@@ -17,14 +17,23 @@ export default function HospitalsPage({ user }: PageProps) {
 	const { authToken } = useAuth();
 	let dataAsObjects;
 	// if (authToken) {
-	const { isLoading, error, data } = useQuery('hospitals', async () => {
-		const { data } = await axios.post(`/api/hospitals`, {
-			token: authToken,
-			id: user.user_metadata.id,
-			email: user.email,
-		});
-		return data;
-	});
+	const { isLoading, error, data } = useQuery(
+		'hospitals',
+		async () => {
+			const { data } = await axios.post(`/api/hospitals`, {
+				token: authToken,
+				id: user.user_metadata.id,
+				email: user.email,
+			});
+			return data;
+		},
+		{
+			enabled: !!authToken,
+			refetchOnMount: true,
+			refetchOnWindowFocus: false,
+			cacheTime: 900000,
+		}
+	);
 
 	if (data) {
 		dataAsObjects = data.response.map((item: string) => JSON.parse(item));

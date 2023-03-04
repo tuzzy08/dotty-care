@@ -119,7 +119,7 @@ function sortData(
 	);
 }
 
-export default function NotesList({ list }: any) {
+export default function NotesTable({ list }: any) {
 	const parsedData = list.map((item: string) => JSON.parse(item));
 	const [note, setNote] = useState<RowData | null>(null);
 	console.log('data');

@@ -56,27 +56,11 @@ export default function LoginForm({ setVisibleForm }: any) {
 	} = useForm<Inputs>();
 	const handleLogin: SubmitHandler<Inputs> = async (form_data) => {
 		try {
-			console.log(form_data);
 			if (signIn) {
 				const response = await signIn({
 					email: form_data.email,
 					password: form_data.password,
 				});
-				// Setup account on chain
-				if (response) {
-					const { user } = response;
-					// Call api route to register user or get token
-					const { data: userToken } = await axios.post('/api/auth/login', {
-						id: user?.user_metadata.id,
-						email: form_data.email,
-					});
-					// console.log('token in login component');
-					// console.log(userToken);
-
-					if (userToken && setAuthToken) {
-						setAuthToken(userToken);
-					}
-				}
 			}
 		} catch (error) {
 			console.log(error);

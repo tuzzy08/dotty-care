@@ -14,6 +14,7 @@ import axios from 'axios';
 import { useState } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { v4 as uuidv4 } from 'uuid';
+import { useAuth } from '../../../lib/auth';
 
 type Inputs = {
 	patient_ID: string;
@@ -28,13 +29,16 @@ export default function Record({
 	setOpened,
 	setpatientInfo,
 }: any) {
+	const { authToken } = useAuth();
 	const submitHandler: SubmitHandler<Inputs> = async (form_data) => {
 		const recordID = `${uuidv4()}`;
 		const { data } = await axios.post('/api/records/create', {
+			authToken,
 			recordID,
 			patient_ID,
 			id: hospital.user_metadata.id,
 			email: hospital.email,
+			hospitalName: hospital.user_metadata.name,
 			doctorName: form_data.doctorName,
 			doctorNote: form_data.additionalInfo,
 		});

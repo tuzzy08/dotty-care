@@ -12,52 +12,54 @@ export default async function handler(
 ) {
 	if (req.method === 'POST') {
 		// Enroll Admin User
-		const { data: response } = await axios.post(
-			'http://localhost:8801/user/enroll',
-			{
-				id: 'admin',
-				secret: 'adminpw',
-			}
-		);
+		// const { data: response } = await axios.post(
+		// 	'http://localhost:8801/user/enroll',
+		// 	{
+		// 		id: 'admin',
+		// 		secret: 'adminpw',
+		// 	}
+		// );
 
-		console.log('admin token');
-		console.log(response.token);
+		// console.log('admin token');
+		// console.log(response.token);
 
-		if (response.token) {
+		// if (response.token) {
+		// const { data } = await axios.post(
+		// 	'http://localhost:8801/user/enroll',
+		// 	{ id: req.body.id, secret: req.body.email },
+		// 	{
+		// 		headers: {
+		// 			Authorization: `Bearer ${response.token}`,
+		// 		},
+		// 	}
+		// );
+		// const userToken = data.token;
+		// const { id } = req.body;
+		const { token } = req.body;
+		if (token) {
+			const record = {
+				recordID: req.body.recordID,
+				patientID: req.body.patient_ID,
+				hospitalName: req.body.hospitalName,
+				hospitalID: req.body.id,
+				doctorName: req.body.doctorName,
+				doctorNote: req.body.doctorNote,
+			};
 			const { data } = await axios.post(
-				'http://localhost:8801/user/enroll',
-				{ id: req.body.id, secret: req.body.email },
+				'http://localhost:8801/invoke/fasthealth-1/fasthealth',
+				{
+					method: 'FHContract:createRecord',
+					args: [JSON.stringify(record)],
+				},
 				{
 					headers: {
-						Authorization: `Bearer ${response.token}`,
+						Authorization: `Bearer ${token}`,
 					},
 				}
 			);
-			const { id } = req.body;
-			const userToken = data.token;
-			if (id) {
-				const record = {
-					recordID: req.body.recordID,
-					patientID: req.body.patient_ID,
-					hospitalID: req.body.id,
-					doctorName: req.body.doctorName,
-					doctorNote: req.body.doctorNote,
-				};
-				const { data } = await axios.post(
-					'http://localhost:8801/invoke/fasthealth-1/fasthealth',
-					{
-						method: 'FHContract:createRecord',
-						args: [JSON.stringify(record)],
-					},
-					{
-						headers: {
-							Authorization: `Bearer ${userToken}`,
-						},
-					}
-				);
-				console.log(data);
-				res.status(200).send(data);
-			}
+			console.log(data);
+			res.status(200).send(data);
 		}
+		// }
 	}
 }

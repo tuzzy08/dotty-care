@@ -13,13 +13,22 @@ EventsList.getLayout = function getLayout(page: any) {
 };
 
 export default function EventsList({ user }: PageProps) {
-	const { isLoading, error, data } = useQuery('myNotes', async () => {
-		const { data } = await axios.post(`/api/notes/${user.user_metadata.id}`, {
-			id: user.user_metadata.id,
-			email: user.email,
-		});
-		return data;
-	});
+	const { isLoading, error, data } = useQuery(
+		'myNotes',
+		async () => {
+			const { data } = await axios.post(`/api/notes/${user.user_metadata.id}`, {
+				id: user.user_metadata.id,
+				email: user.email,
+			});
+			return data;
+		},
+		{
+			// enabled: !!authToken,
+			refetchOnMount: true,
+			refetchOnWindowFocus: false,
+			cacheTime: 900000,
+		}
+	);
 	if (data) {
 		console.log(data.response);
 	}

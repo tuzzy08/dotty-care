@@ -24,7 +24,6 @@ import { Layout } from '../../../layouts';
 import axios from 'axios';
 import { useAuth } from '../../../lib/auth';
 import { PageProps } from '../types';
-import { useQuery } from 'react-query';
 import ParamedicNote from '../components/ParamedicNote';
 
 type Inputs = {

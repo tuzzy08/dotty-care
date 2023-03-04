@@ -11,13 +11,25 @@ RecordsPage.getLayout = function getLayout(page: any) {
 };
 
 export default function RecordsPage({ user }: any) {
-	const { isLoading, error, data } = useQuery('myRecords', async () => {
-		const { data } = await axios.post(`/api/records/${user.user_metadata.id}`, {
-			id: user.user_metadata.id,
-			email: user.email,
-		});
-		return data;
-	});
+	const { isLoading, error, data } = useQuery(
+		'myRecords',
+		async () => {
+			const { data } = await axios.post(
+				`/api/records/${user.user_metadata.id}`,
+				{
+					id: user.user_metadata.id,
+					email: user.email,
+				}
+			);
+			return data;
+		},
+		{
+			// enabled: !!authToken,
+			refetchOnMount: true,
+			refetchOnWindowFocus: false,
+			cacheTime: 300000,
+		}
+	);
 	console.log(data);
 	return (
 		<div style={{ width: '80vw' }}>

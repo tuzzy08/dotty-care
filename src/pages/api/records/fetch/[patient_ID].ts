@@ -18,17 +18,14 @@ export default async function handler(
 		// 		id: 'admin',
 		// 		secret: 'adminpw',
 		// 	}
-		// {
-		// 	headers: {
-		// 		'Content-Type': 'application/json',
-		// 	},
-		// }
+		// 	// {
+		// 	// 	headers: {
+		// 	// 		'Content-Type': 'application/json',
+		// 	// 	},
+		// 	// }
 		// );
 
 		// const adminToken = data.token;
-
-		// console.log('admin token');
-		// console.log(adminToken);
 
 		// if (adminToken) {
 		// const { data } = await axios.post(
@@ -42,14 +39,15 @@ export default async function handler(
 		// );
 
 		// const userToken = data.token;
-		const { patient_ID } = req.query;
 		const { token } = req.body;
+		const { patient_ID } = req.query;
+		const hospitalID = req.body.id;
 		if (patient_ID && token) {
 			const { data } = await axios.post(
 				'http://localhost:8801/query/fasthealth-1/fasthealth',
 				{
-					method: 'FHContract:QueryRecordsByPatient',
-					args: [patient_ID],
+					method: 'FHContract:getRecordsForPatient',
+					args: [patient_ID, hospitalID],
 				},
 				{
 					headers: {

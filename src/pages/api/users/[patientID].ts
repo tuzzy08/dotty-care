@@ -12,45 +12,46 @@ export default async function handler(
 ) {
 	if (req.method === 'POST') {
 		// Enroll Admin User
-		const { data } = await axios.post('http://localhost:8801/user/enroll', {
-			id: 'admin',
-			secret: 'adminpw',
-		});
-		const { token: adminToken } = data;
-		console.log('admin token');
-		console.log(adminToken);
+		// const { data } = await axios.post('http://localhost:8801/user/enroll', {
+		// 	id: 'admin',
+		// 	secret: 'adminpw',
+		// });
+		// const { token: adminToken } = data;
+		// console.log('admin token');
+		// console.log(adminToken);
 
-		if (adminToken) {
+		// if (adminToken) {
+		// 	const { data } = await axios.post(
+		// 		'http://localhost:8801/user/enroll',
+		// 		{ id: req.body.id, secret: req.body.email },
+		// 		{
+		// 			headers: {
+		// 				Authorization: `Bearer ${adminToken}`,
+		// 			},
+		// 		}
+		// 	);
+		// if (data.token) {
+		// const { token: userToken } = data;
+		const { patientID } = req.query;
+		const { token } = req.body;
+		if (patientID && token) {
 			const { data } = await axios.post(
-				'http://localhost:8801/user/enroll',
-				{ id: req.body.id, secret: req.body.email },
+				'http://localhost:8801/query/fasthealth-1/fasthealth',
+				{
+					method: 'FHContract:getPatient',
+					args: [`${patientID}`],
+				},
 				{
 					headers: {
-						Authorization: `Bearer ${adminToken}`,
+						Authorization: `Bearer ${token}`,
 					},
 				}
 			);
-			if (data.token) {
-				const { patientID } = req.query;
-				const { token: userToken } = data;
-				if (patientID) {
-					const { data } = await axios.post(
-						'http://localhost:8801/query/fasthealth-1/fasthealth',
-						{
-							method: 'FHContract:getPatient',
-							args: [`${patientID}`],
-						},
-						{
-							headers: {
-								Authorization: `Bearer ${userToken}`,
-							},
-						}
-					);
-					console.log('API REsponse');
-					console.log(data);
-					res.status(200).send(data.response);
-				}
-			}
+			console.log('API REsponse');
+			console.log(data);
+			res.status(200).send(data.response);
 		}
+		// }
+		// }
 	}
 }

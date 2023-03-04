@@ -40,12 +40,15 @@ export default function Index({ user }: PageProps) {
 	const { authToken } = useAuth();
 
 	async function getRecords(patientID: string, id: string, email?: string) {
-		const { data } = await axios.post(`/api/records/${patientID}`, {
+		const {
+			data: { response },
+		} = await axios.post(`/api/records/fetch/${patientID}`, {
+			token: authToken,
 			id,
 			email,
 		});
-		console.log(data);
-		setRecords(data);
+		const parsedRecords = response.map((record: string) => JSON.parse(record));
+		setRecords(parsedRecords);
 	}
 
 	const searchUser: SubmitHandler<Inputs> = async (form_data) => {
@@ -70,9 +73,9 @@ export default function Index({ user }: PageProps) {
 
 	const ths = (
 		<tr>
-			<th>Patient ID</th>
+			{/* <th>Patient ID</th> */}
 			<th>Patient Name</th>
-			{/* <th>Email</th> */}
+			<th>Email</th>
 			<th>Actions</th>
 		</tr>
 	);
@@ -143,9 +146,9 @@ export default function Index({ user }: PageProps) {
 					<tbody>
 						{patientInfo ? (
 							<tr>
-								<td>{patientInfo.patient_ID}</td>
+								{/* <td>{patientInfo.patient_ID}</td> */}
 								<td>{patientInfo.full_name}</td>
-								{/* <td></td> */}
+								<td>{patientInfo.email}</td>
 								<td>
 									<Group>
 										<Button
@@ -180,7 +183,7 @@ export default function Index({ user }: PageProps) {
 			</Card>
 			{records && (
 				<Card shadow='sm' radius={'md'} p='md' w='700px'>
-					<RecordsTable data={[]} />
+					<RecordsTable data={records} />
 				</Card>
 			)}
 		</Stack>

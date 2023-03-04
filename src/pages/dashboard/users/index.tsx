@@ -14,64 +14,66 @@ IndexPage.getLayout = function getLayout(page: any) {
 };
 
 export default function IndexPage({ user }: PageProps) {
-	const { authToken, permissions, setPermissions } = useAuth();
+	const { authToken, setPermissions } = useAuth();
 	console.log('Auth Token');
 	console.log(authToken);
-	if (authToken) {
-		const {
-			isLoading,
-			error,
-			data: records,
-		} = useQuery(
-			'myRecords',
-			async () => {
-				const { data } = await axios.post(
-					`/api/records/${user.user_metadata.id}`,
-					{
-						token: authToken,
-						id: user.user_metadata.id,
-						email: user.email,
-					}
-				);
-				return data;
-			},
-			{
-				enabled: !!authToken,
-			}
-		);
-		console.log('Records');
-		console.log(records);
-		// if (data) {
-		// 	console.log('records list');
-		// 	console.log(data);
-		// }
-	}
-
-	if (authToken) {
-		const { data } = useQuery(
-			'userObject',
-			async () => {
-				const { data } = await axios.post(
-					`/api/users/${user.user_metadata.id}`,
-					{
-						token: authToken,
-						id: user.user_metadata.id,
-						email: user.email,
-					}
-				);
-
-				return data;
-			},
-			{
-				enabled: !!authToken,
-			}
-		);
-		if (data) {
-			console.log('User Object');
-			console.log(data);
-			if (setPermissions) setPermissions(data.permissions);
+	// if (authToken) {
+	const {
+		isLoading,
+		error,
+		data: records,
+	} = useQuery(
+		'myRecords',
+		async () => {
+			const { data } = await axios.post(
+				`/api/records/${user.user_metadata.id}`,
+				{
+					token: authToken,
+					id: user.user_metadata.id,
+					email: user.email,
+				}
+			);
+			return data;
+		},
+		{
+			enabled: !!authToken,
+			refetchOnMount: true,
+			refetchOnWindowFocus: false,
+			cacheTime: 300000,
 		}
+	);
+	console.log('Records');
+	console.log(records);
+	// if (data) {
+	// 	console.log('records list');
+	// 	console.log(data);
+	// }
+	// }
+
+	// if (authToken) {
+	const { data } = useQuery(
+		'userObject',
+		async () => {
+			const { data } = await axios.post(`/api/users/${user.user_metadata.id}`, {
+				token: authToken,
+				id: user.user_metadata.id,
+				email: user.email,
+			});
+
+			return data;
+		},
+		{
+			enabled: !!authToken,
+			refetchOnMount: true,
+			refetchOnWindowFocus: false,
+		}
+	);
+	if (data) {
+		console.log('User Object');
+		console.log(data);
+		if (setPermissions) setPermissions(data.permissions);
 	}
+	// }
 
 	return (
 		<Container size='xl' py='xl'>
