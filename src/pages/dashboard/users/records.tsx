@@ -1,35 +1,27 @@
 import { createServerSupabaseClient } from '@supabase/auth-helpers-nextjs';
 import { GetServerSidePropsContext } from 'next';
-import {
-	Box,
-	Button,
-	Card,
-	Center,
-	Container,
-	Flex,
-	Group,
-	Paper,
-	Text,
-} from '@mantine/core';
+import { Box, Card, Center, Text } from '@mantine/core';
 import { RecordsTable } from '../components/RecordsTable';
 import { Layout } from '../../../layouts';
+import { useQuery } from 'react-query';
+import axios from 'axios';
 
 RecordsPage.getLayout = function getLayout(page: any) {
 	return <Layout variant={'user'}>{page}</Layout>;
 };
 
-export default function RecordsPage() {
+export default function RecordsPage({ user }: any) {
+	const { isLoading, error, data } = useQuery('myRecords', async () => {
+		const { data } = await axios.post(`/api/records/${user.user_metadata.id}`, {
+			id: user.user_metadata.id,
+			email: user.email,
+		});
+		return data;
+	});
+	console.log(data);
 	return (
-		// <Box>
-		// <Container>
-		// <Center>
 		<div style={{ width: '80vw' }}>
-			<Card
-			// shadow='sm'
-			// sx={(theme) => ({
-			// 	padding: '10px',
-			// })}
-			>
+			<Card>
 				<Center>
 					<Box
 						sx={() => ({
@@ -43,19 +35,11 @@ export default function RecordsPage() {
 						<Text align='center' weight={700} transform='uppercase'>
 							My records
 						</Text>
-						<RecordsTable data={data} />
+						<RecordsTable data={[]} />
 					</Box>
 				</Center>
 			</Card>
 		</div>
-		// </Center>
-		// </Container>
-		// </Box>
-
-		// <Group mt={50} position="apart">
-
-		// <Logout />
-		// </Group>
 	);
 }
 
@@ -85,21 +69,3 @@ export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
 		},
 	};
 };
-
-const data = [
-	{
-		hospital: 'Athena Weissnat',
-		doctor_name: 'Scott - Rippin',
-		date_created: '12-12-2023',
-	},
-	{
-		hospital: 'Deangelo Runolfsson',
-		doctor_name: 'Greenfelder - Krajcik',
-		date_created: '12-12-2023',
-	},
-	{
-		hospital: 'Danny Carter',
-		doctor_name: 'Kohler Frank',
-		date_created: '12-12-2023',
-	},
-];

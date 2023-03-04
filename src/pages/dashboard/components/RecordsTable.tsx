@@ -39,9 +39,12 @@ const useStyles = createStyles((theme) => ({
 interface RecordsTableProps {
 	data: {
 		recordID: string;
-		hospitalName: string;
+		patientID: string;
+		hospitalID: string;
+		hospitalName?: string;
 		doctorName: string;
-		dateCreated: string;
+		doctorNote: string;
+		dateCreated?: string;
 	}[];
 }
 
@@ -91,7 +94,19 @@ export function RecordsTable({ data }: RecordsTableProps) {
 						<th>Action</th>
 					</tr>
 				</thead>
-				<tbody>{rows}</tbody>
+				<tbody>
+					{rows.length > 0 ? (
+						rows
+					) : (
+						<tr>
+							<td colSpan={2}>
+								<Text weight={500} align='center'>
+									Nothing found
+								</Text>
+							</td>
+						</tr>
+					)}
+				</tbody>
 			</Table>
 		</ScrollArea>
 	);

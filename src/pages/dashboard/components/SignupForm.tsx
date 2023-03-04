@@ -64,7 +64,7 @@ const useStyles = createStyles((theme) => ({
 
 export default function SignupForm({ setVisibleForm }: any) {
 	const { classes } = useStyles();
-	const { authToken, setAuthToken, signUp } = useAuth();
+	const { setAuthToken, signUp } = useAuth();
 	const {
 		register,
 		handleSubmit,
@@ -90,8 +90,6 @@ export default function SignupForm({ setVisibleForm }: any) {
 			try {
 				const res = await signUp(signupData);
 				if (res) {
-					console.log('signup response');
-					console.log(res);
 					// Call api route to register user
 					const { data: token } = await axios.post('/api/auth/signup', {
 						id,

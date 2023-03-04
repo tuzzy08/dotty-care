@@ -44,7 +44,11 @@ export default async function handler(
 						'http://localhost:8801/invoke/fasthealth-1/fasthealth',
 						{
 							method: 'FHContract:createPatient',
-							args: [`${req.body.id}`, `${req.body.fullname}`],
+							args: [
+								`${req.body.id}`,
+								`${req.body.fullname}`,
+								`${req.body.email}`,
+							],
 						},
 						{
 							headers: {

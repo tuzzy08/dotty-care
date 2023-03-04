@@ -12,44 +12,42 @@ export default async function handler(
 ) {
 	if (req.method === 'POST') {
 		// Enroll Admin User
-		const { data } = await axios.post(
+		const { data: response } = await axios.post(
 			'http://localhost:8801/user/enroll',
 			{
 				id: 'admin',
 				secret: 'adminpw',
 			}
-			// {
-			// 	headers: {
-			// 		'Content-Type': 'application/json',
-			// 	},
-			// }
 		);
 
-		const adminToken = data.token;
-
 		console.log('admin token');
-		console.log(adminToken);
+		console.log(response.token);
 
-		const query = {};
-		if (adminToken) {
+		if (response.token) {
 			const { data } = await axios.post(
 				'http://localhost:8801/user/enroll',
 				{ id: req.body.id, secret: req.body.email },
 				{
 					headers: {
-						Authorization: `Bearer ${adminToken}`,
+						Authorization: `Bearer ${response.token}`,
 					},
 				}
 			);
-
-			const { patient_ID } = req.query;
+			const { id } = req.body;
 			const userToken = data.token;
-			if (patient_ID) {
+			if (id) {
+				const record = {
+					recordID: req.body.recordID,
+					patientID: req.body.patient_ID,
+					hospitalID: req.body.id,
+					doctorName: req.body.doctorName,
+					doctorNote: req.body.doctorNote,
+				};
 				const { data } = await axios.post(
-					'http://localhost:8801/query/fasthealth-1/fasthealth',
+					'http://localhost:8801/invoke/fasthealth-1/fasthealth',
 					{
-						method: 'FHContract:QueryRecordsByPatient',
-						args: [patient_ID],
+						method: 'FHContract:createRecord',
+						args: [JSON.stringify(record)],
 					},
 					{
 						headers: {

@@ -227,7 +227,7 @@ export default function HospitalList({ data, id, email }: any) {
 							rows
 						) : (
 							<tr>
-								<td colSpan={Object.keys(data[0]).length}>
+								<td colSpan={2}>
 									<Text weight={500} align='center'>
 										Nothing found
 									</Text>

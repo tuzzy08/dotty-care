@@ -40,18 +40,6 @@ export default function Index({ user }: PageProps) {
 	const [opened, setOpened] = useState(false);
 	const [patientInfo, setpatientInfo] = useState<any>('');
 	const { authToken } = useAuth();
-	// Get Notes
-	// if (authToken) {
-	// const { isLoading, error, data } = useQuery('myNotes', async () => {
-	// 	const { data } = await axios.post(`/api/notes/${user.user_metadata.id}`, {
-	// 		// token: authToken,
-	// 		id: user.user_metadata.id,
-	// 		email: user.email,
-	// 	});
-	// 	return data;
-	// });
-
-	// }
 
 	const handleSignup: SubmitHandler<Inputs> = async (form_data) => {
 		const { data } = await axios.post(`/api/users/${form_data.patientID}`, {

@@ -1,145 +1,189 @@
-import { useState, useMemo } from 'react';
-import dynamic from 'next/dynamic';
+import { useState } from 'react';
 import { createServerSupabaseClient } from '@supabase/auth-helpers-nextjs';
 import {
 	Badge,
-	Box,
 	Button,
 	Card,
-	Center,
-	Checkbox,
 	Flex,
 	Group,
+	Modal,
 	Stack,
+	Table,
 	Text,
 	TextInput,
+	useMantineTheme,
 } from '@mantine/core';
 import {} from '@tabler/icons';
 import { GetServerSidePropsContext } from 'next';
-import { getCookie } from 'cookies-next';
-import { useQuery } from 'react-query';
-import axios from 'axios';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { Layout } from '../../../layouts';
+import axios from 'axios';
+import { useAuth } from '../../../lib/auth';
+import { PageProps } from '../types';
+import { useQuery } from 'react-query';
+import Record from '../components/Record';
+import { RecordsTable } from '../components/RecordsTable';
 
 type Inputs = {
-	email: string;
-	password: string;
+	patientID: string;
 };
 
-NewMedicalRecordPage.getLayout = function getLayout(page: any) {
+Index.getLayout = function getLayout(page: any) {
 	return <Layout variant={'hospital'}>{page}</Layout>;
 };
-function getpatientRecord(patient_ID: string) {
-	const authToken = getCookie('token');
-	if (authToken) {
-		const { isLoading, error, data } = useQuery(`${patient_ID}`, async () => {
-			const { data } = await axios.post('/api/records', {
-				token: authToken,
-			});
-			return data;
-		});
-		console.log('hospital list');
-		console.log(data);
-	}
-}
 
-export default function NewMedicalRecordPage() {
-	// dynamic import
-	const Rte = useMemo(
-		() =>
-			dynamic(
-				() => import('@mantine/rte').then((RichTextEditor) => RichTextEditor),
-				{ ssr: false }
-			),
-		[]
-	);
-	const initialValue = '<p>Create a new  <b>note</b>.</p>';
-	const [value, onChange] = useState(initialValue);
+export default function Index({ user }: PageProps) {
+	const theme = useMantineTheme();
+	const [opened, setOpened] = useState(false);
+	const [records, setRecords] = useState(null);
+	const [patientInfo, setpatientInfo] = useState<any>('');
+	const { authToken } = useAuth();
+
+	async function getRecords(patientID: string, id: string, email?: string) {
+		const { data } = await axios.post(`/api/records/${patientID}`, {
+			id,
+			email,
+		});
+		console.log(data);
+		setRecords(data);
+	}
+
+	const searchUser: SubmitHandler<Inputs> = async (form_data) => {
+		const { data } = await axios.post(`/api/users/${form_data.patientID}`, {
+			token: authToken,
+			id: user.user_metadata.id,
+			email: user.email,
+		});
+		data && setpatientInfo(data);
+		reset((formValues) => ({
+			...formValues,
+			patientID: '',
+		}));
+	};
+
 	const {
 		register,
+		reset,
 		handleSubmit,
 		formState: { errors },
 	} = useForm<Inputs>();
 
-	const onFormSubmit: SubmitHandler<Inputs> = async (form_data) => {
-		try {
-			console.log(form_data);
-		} catch (error) {
-			console.log(error);
-		}
-	};
+	const ths = (
+		<tr>
+			<th>Patient ID</th>
+			<th>Patient Name</th>
+			{/* <th>Email</th> */}
+			<th>Actions</th>
+		</tr>
+	);
 
 	return (
-		<>
-			{/* <Flex
-				// sx={() => ({
-				// 	display: 'flex',
-				// 	flexDirection: 'column',
-				// 	width: '60vw',
-				// 	justifyContent: 'center',
-				// 	alignItems: 'center',
-				// })}
-				w={'60vw'}
-				direction='column'
-				justify={'center'}
-				align={'center'}
-			> */}
-			{/* <Center> */}
+		<Stack spacing={'xl'}>
+			<Modal
+				opened={opened}
+				size='lg'
+				closeButtonLabel='Close Record'
+				closeOnEscape={false}
+				closeOnClickOutside={false}
+				overlayColor={
+					theme.colorScheme === 'dark'
+						? theme.colors.dark[9]
+						: theme.colors.gray[2]
+				}
+				overlayOpacity={0.55}
+				overlayBlur={3}
+				onClose={() => setOpened(false)}
+				title='Create record'
+			>
+				<Record
+					patient_ID={`${patientInfo.patient_ID}`}
+					hospital={user}
+					setOpened={setOpened}
+					setpatientInfo={setpatientInfo}
+				/>
+			</Modal>
 
 			<Card
 				shadow='sm'
-				// style={{ overflow: 'scroll' }}
 				radius={'md'}
 				p='md'
-				w='600px'
+				w='650px'
 				mah={600}
 				withBorder
 				mt='xs'
 			>
 				<Group position='apart' mb='lg'>
-					<Text weight={500}>Create medical record</Text>
+					<Text weight={500}>Search for patient</Text>
 					<Badge
 						variant='gradient'
 						gradient={{ from: '#ed6ea0', to: '#ec8c69', deg: 35 }}
 					>
-						Hospital-ID-Here
+						{`ID: ${user.user_metadata.id}`}
 					</Badge>
 				</Group>
-				<form>
+				<form onSubmit={handleSubmit(searchUser)}>
 					<Stack align='flex-start'>
-						<TextInput label='Enter patient ID' placeholder='user-5cbda-2345' />
-						<Group
-							sx={(theme) => ({
-								border: `1px solid ${theme.colors.gray[3]}`,
-							})}
-							p='md'
-						>
-							<Checkbox.Group
-								defaultValue={['react']}
-								label='Some options here'
-								// description='This is anonymous'
-								withAsterisk
-							>
-								<Checkbox value='option1' label='Option 1' />
-								<Checkbox value='option2' label='Option 2' />
-								<Checkbox value='option3' label='Option 3' />
-								<Checkbox value='option4' label='Option 4' />
-							</Checkbox.Group>
-						</Group>
-						<Text weight={100}>Enter additional notes</Text>
-						<Box style={{ overflow: 'scroll', maxHeight: 250 }}>
-							<Rte value={value} onChange={onChange} />
-						</Box>
+						<TextInput
+							label='Enter patient ID'
+							placeholder='user-5cbda-2345'
+							{...register('patientID')}
+						/>
+
 						<Button variant='outline' mt='sm' size='md' type='submit'>
 							Submit
 						</Button>
 					</Stack>
 				</form>
 			</Card>
-			{/* </Center> */}
-			{/* </Flex> */}
-		</>
+
+			<Card shadow='sm' radius={'md'} p='md' w='700px'>
+				<Table highlightOnHover>
+					<caption>Patient details</caption>
+					<thead>{ths}</thead>
+					<tbody>
+						{patientInfo ? (
+							<tr>
+								<td>{patientInfo.patient_ID}</td>
+								<td>{patientInfo.full_name}</td>
+								{/* <td></td> */}
+								<td>
+									<Group>
+										<Button
+											size='xs'
+											onClick={() =>
+												getRecords(
+													patientInfo.patient_ID,
+													user.user_metadata.id,
+													user.email
+												)
+											}
+											variant='outline'
+											color={'teal'}
+										>
+											Get Records
+										</Button>
+										<Button
+											size='xs'
+											onClick={() => setOpened(true)}
+											variant='outline'
+										>
+											Create Record
+										</Button>
+									</Group>
+								</td>
+							</tr>
+						) : (
+							<></>
+						)}
+					</tbody>
+				</Table>
+			</Card>
+			{records && (
+				<Card shadow='sm' radius={'md'} p='md' w='700px'>
+					<RecordsTable data={[]} />
+				</Card>
+			)}
+		</Stack>
 	);
 }
 
@@ -151,7 +195,7 @@ export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
 		data: { session },
 	} = await supabase.auth.getSession();
 
-	if (!session || session.user.user_metadata.accountType !== 'Ems')
+	if (!session || session.user.user_metadata.accountType !== 'Hospital')
 		return {
 			redirect: {
 				destination: '/',
