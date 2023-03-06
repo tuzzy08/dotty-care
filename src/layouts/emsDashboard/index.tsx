@@ -24,7 +24,7 @@ export const data: Array<Menu_Item> = [
 		label: 'Emergency Events',
 		icon: IconActivityHeartbeat,
 	},
-	{ link: '/dashboard/ems/settings', label: 'Settings', icon: IconSettings },
+	// { link: '/dashboard/ems/settings', label: 'Settings', icon: IconSettings },
 ];
 
 export default function EmsLayout({ children }: Props) {

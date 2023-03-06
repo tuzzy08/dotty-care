@@ -13,25 +13,30 @@ import {
 	IconReportMedical,
 	IconSettings,
 	IconBuildingHospital,
+	IconNotes,
 } from '@tabler/icons';
 
 export const data: Array<Menu_Item> = [
 	{ link: '/dashboard/users', label: 'Home', icon: IconHome2 },
-
+	{
+		link: '/dashboard/users/hospitals',
+		label: 'Hospitals',
+		icon: IconBuildingHospital,
+	},
 	{
 		link: '/dashboard/users/records',
 		label: 'My Medical Records',
 		icon: IconReportMedical,
 	},
 	{
-		link: '/dashboard/users/hospitals',
-		label: 'Hospitals',
-		icon: IconBuildingHospital,
+		link: '/dashboard/users/notes',
+		label: 'Paramedic Notes',
+		icon: IconNotes,
 	},
-	{ link: '/dashboard/users/settings', label: 'Settings', icon: IconSettings },
+	// { link: '/dashboard/users/settings', label: 'Settings', icon: IconSettings },
 ];
 
-export default function AdminLayout({ children }: Props) {
+export default function UserLayout({ children }: Props) {
 	const theme = useMantineTheme();
 	const [opened, setOpened] = useState<boolean>(false);
 	return (

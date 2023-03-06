@@ -1,33 +1,30 @@
 import { createServerSupabaseClient } from '@supabase/auth-helpers-nextjs';
 import { GetServerSidePropsContext } from 'next';
 import { Card, Center, Stack, Text } from '@mantine/core';
-import { RecordsTable } from '../components/RecordsTable';
 import { Layout } from '../../../layouts';
 import { useQuery } from 'react-query';
 import axios from 'axios';
 import { useAuth } from '../../../lib/auth';
+import NotesTable from '../components/NotesTable';
 
-RecordsPage.getLayout = function getLayout(page: any) {
+NotesPage.getLayout = function getLayout(page: any) {
 	return <Layout variant={'user'}>{page}</Layout>;
 };
 
-export default function RecordsPage({ user }: any) {
+export default function NotesPage({ user }: any) {
 	const { authToken } = useAuth();
 	const {
 		isLoading: isLoadingRecords,
 		error,
-		data: records,
+		data: notes,
 	} = useQuery(
-		'myRecords',
+		'myNotes',
 		async () => {
-			const { data } = await axios.post(
-				`/api/records/${user.user_metadata.id}`,
-				{
-					token: authToken,
-					id: user.user_metadata.id,
-					email: user.email,
-				}
-			);
+			const { data } = await axios.post(`/api/notes/${user.user_metadata.id}`, {
+				token: authToken,
+				id: user.user_metadata.id,
+				email: user.email,
+			});
 			return data;
 		},
 		{
@@ -37,8 +34,6 @@ export default function RecordsPage({ user }: any) {
 			cacheTime: 300000,
 		}
 	);
-	console.log('Records');
-	console.log(records);
 
 	return (
 		<div style={{ width: '80vw' }}>
@@ -54,10 +49,10 @@ export default function RecordsPage({ user }: any) {
 						})}
 					>
 						<Text align='center' weight={700} transform='uppercase'>
-							My records
+							My Notes
 						</Text>
 						{isLoadingRecords && <Text>Loading</Text>}
-						{records && <RecordsTable data={records} />}
+						{notes && <NotesTable data={notes} />}
 					</Stack>
 				</Center>
 			</Card>
