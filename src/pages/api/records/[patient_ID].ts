@@ -11,37 +11,6 @@ export default async function handler(
 	res: NextApiResponse<Data>
 ) {
 	if (req.method === 'POST') {
-		// Enroll Admin User
-		// const { data } = await axios.post(
-		// 	'http://localhost:8801/user/enroll',
-		// 	{
-		// 		id: 'admin',
-		// 		secret: 'adminpw',
-		// 	}
-		// {
-		// 	headers: {
-		// 		'Content-Type': 'application/json',
-		// 	},
-		// }
-		// );
-
-		// const adminToken = data.token;
-
-		// console.log('admin token');
-		// console.log(adminToken);
-
-		// if (adminToken) {
-		// const { data } = await axios.post(
-		// 	'http://localhost:8801/user/enroll',
-		// 	{ id: req.body.id, secret: req.body.email },
-		// 	{
-		// 		headers: {
-		// 			Authorization: `Bearer ${adminToken}`,
-		// 		},
-		// 	}
-		// );
-
-		// const userToken = data.token;
 		const { patient_ID } = req.query;
 		const { token } = req.body;
 		if (patient_ID && token) {
@@ -57,8 +26,8 @@ export default async function handler(
 					},
 				}
 			);
-			console.log(data);
-			res.status(200).send(data);
+			console.log(data.response);
+			res.status(200).send(data.response);
 		}
 		// }
 	}

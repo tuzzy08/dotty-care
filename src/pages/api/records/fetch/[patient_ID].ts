@@ -1,4 +1,3 @@
-// Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import type { NextApiRequest, NextApiResponse } from 'next';
 import axios from 'axios';
 
@@ -11,37 +10,9 @@ export default async function handler(
 	res: NextApiResponse<Data>
 ) {
 	if (req.method === 'POST') {
-		// Enroll Admin User
-		// const { data } = await axios.post(
-		// 	'http://localhost:8801/user/enroll',
-		// 	{
-		// 		id: 'admin',
-		// 		secret: 'adminpw',
-		// 	}
-		// 	// {
-		// 	// 	headers: {
-		// 	// 		'Content-Type': 'application/json',
-		// 	// 	},
-		// 	// }
-		// );
-
-		// const adminToken = data.token;
-
-		// if (adminToken) {
-		// const { data } = await axios.post(
-		// 	'http://localhost:8801/user/enroll',
-		// 	{ id: req.body.id, secret: req.body.email },
-		// 	{
-		// 		headers: {
-		// 			Authorization: `Bearer ${adminToken}`,
-		// 		},
-		// 	}
-		// );
-
-		// const userToken = data.token;
 		const { token } = req.body;
 		const { patient_ID } = req.query;
-		const hospitalID = req.body.id;
+		const { hospitalID } = req.body;
 		if (patient_ID && token) {
 			const { data } = await axios.post(
 				'http://localhost:8801/query/fasthealth-1/fasthealth',
@@ -55,8 +26,12 @@ export default async function handler(
 					},
 				}
 			);
-			console.log(data);
-			res.status(200).send(data);
+			console.log('DAta');
+			console.log(data.response);
+			if (data.response.status === 'denied') {
+				res.status(200).send(data.response.status);
+			}
+			res.status(200).send(data.response);
 		}
 		// }
 	}

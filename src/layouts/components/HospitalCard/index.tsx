@@ -95,7 +95,7 @@ export default function HospitalCard({ hospital_ID, id, email }: any) {
 		});
 
 		if (data) {
-			if (setPermissions) setPermissions(data.response.permissions);
+			if (setPermissions) setPermissions(data.permissions);
 		}
 	}
 

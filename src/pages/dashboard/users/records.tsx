@@ -1,22 +1,31 @@
 import { createServerSupabaseClient } from '@supabase/auth-helpers-nextjs';
 import { GetServerSidePropsContext } from 'next';
-import { Box, Card, Center, Text } from '@mantine/core';
+import { Box, Card, Center, Stack, Text } from '@mantine/core';
 import { RecordsTable } from '../components/RecordsTable';
 import { Layout } from '../../../layouts';
 import { useQuery } from 'react-query';
 import axios from 'axios';
+import { useState } from 'react';
+import { useAuth } from '../../../lib/auth';
 
 RecordsPage.getLayout = function getLayout(page: any) {
 	return <Layout variant={'user'}>{page}</Layout>;
 };
 
 export default function RecordsPage({ user }: any) {
-	const { isLoading, error, data } = useQuery(
+	const { authToken, setPermissions } = useAuth();
+	const [myRecords, setMyRecords] = useState<any | null>(null);
+	const {
+		isLoading: isLoadingRecords,
+		error,
+		data: records,
+	} = useQuery(
 		'myRecords',
 		async () => {
 			const { data } = await axios.post(
 				`/api/records/${user.user_metadata.id}`,
 				{
+					token: authToken,
 					id: user.user_metadata.id,
 					email: user.email,
 				}
@@ -24,18 +33,23 @@ export default function RecordsPage({ user }: any) {
 			return data;
 		},
 		{
-			// enabled: !!authToken,
-			refetchOnMount: true,
+			enabled: !!authToken,
+			refetchOnMount: false,
 			refetchOnWindowFocus: false,
 			cacheTime: 300000,
 		}
 	);
-	console.log(data);
+	console.log('Records');
+	console.log(records);
+	// if (records) {
+	// 	setMyRecords(records);
+	// }
+
 	return (
 		<div style={{ width: '80vw' }}>
 			<Card>
 				<Center>
-					<Box
+					<Stack
 						sx={() => ({
 							display: 'flex',
 							maxWidth: '900px',
@@ -47,8 +61,9 @@ export default function RecordsPage({ user }: any) {
 						<Text align='center' weight={700} transform='uppercase'>
 							My records
 						</Text>
-						<RecordsTable data={[]} />
-					</Box>
+						{isLoadingRecords && <Text>Loading</Text>}
+						{records && <RecordsTable data={records} />}
+					</Stack>
 				</Center>
 			</Card>
 		</div>

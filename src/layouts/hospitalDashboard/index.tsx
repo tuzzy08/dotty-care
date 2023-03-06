@@ -17,7 +17,7 @@ import {
 
 export const data: Array<Menu_Item> = [
 	{ link: '/dashboard/hospital', label: 'Home', icon: IconHome },
-	{ link: '/dashboard/hospital/patients', label: 'Patients', icon: IconUsers },
+	// { link: '/dashboard/hospital/patients', label: 'Patients', icon: IconUsers },
 ];
 
 export default function HospitalLayout({ children }: Props) {

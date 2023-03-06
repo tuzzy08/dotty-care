@@ -31,12 +31,21 @@ const useStyles = createStyles((theme) => ({
 	},
 }));
 
-interface CardGradientProps {
-	title: string;
-	description: string;
+export interface RecordProps {
+	recordID: string;
+	patientID: string;
+	hospitalID: string;
+	hospitalName?: string;
+	doctorName: string;
+	doctorNote: string;
+	dateCreated?: string;
 }
 
-export function RecordCard({ title, description }: CardGradientProps) {
+export function RecordCard({
+	hospitalName,
+	doctorName,
+	doctorNote,
+}: RecordProps) {
 	const { classes } = useStyles();
 	return (
 		<Paper withBorder radius='md' className={classes.card}>
@@ -49,10 +58,13 @@ export function RecordCard({ title, description }: CardGradientProps) {
 				<IconColorSwatch size={28} stroke={1.5} />
 			</ThemeIcon>
 			<Text size='xl' weight={500} mt='md'>
-				{title}
+				{`Hospital: ${hospitalName}`}
 			</Text>
 			<Text size='sm' mt='sm' color='dimmed'>
-				{description}
+				{`Doctor: ${doctorName}`}
+			</Text>
+			<Text size='sm' mt='sm' color='dimmed'>
+				{`Doctor's Notes: ${doctorNote}`}
 			</Text>
 		</Paper>
 	);

@@ -89,6 +89,7 @@ export default function Index({ user }: PageProps) {
 			>
 				<ParamedicNote
 					patient_ID={`${patientInfo.patient_ID}`}
+					patientName={`${patientInfo.full_name}`}
 					paramedic={user}
 					setOpened={setOpened}
 					setpatientInfo={setpatientInfo}

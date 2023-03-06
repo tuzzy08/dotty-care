@@ -13,7 +13,8 @@ import {
 	TextInput,
 	useMantineTheme,
 } from '@mantine/core';
-import {} from '@tabler/icons';
+import { showNotification } from '@mantine/notifications';
+import { IconError404 } from '@tabler/icons';
 import { GetServerSidePropsContext } from 'next';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { Layout } from '../../../layouts';
@@ -40,15 +41,26 @@ export default function Index({ user }: PageProps) {
 	const { authToken } = useAuth();
 
 	async function getRecords(patientID: string, id: string, email?: string) {
-		const {
-			data: { response },
-		} = await axios.post(`/api/records/fetch/${patientID}`, {
+		const { data } = await axios.post(`/api/records/fetch/${patientID}`, {
 			token: authToken,
+			hospitalID: user.user_metadata.hospitalID,
 			id,
 			email,
 		});
-		const parsedRecords = response.map((record: string) => JSON.parse(record));
-		setRecords(parsedRecords);
+		if (data === 'denied') {
+			console.log(data);
+			showNotification({
+				title: 'Fast Health',
+				message: 'Access Denied',
+				color: 'red',
+				icon: <IconError404 />,
+				autoClose: 5000,
+			});
+		} else {
+			const parsedRecords = data.map((record: string) => JSON.parse(record));
+			setRecords(parsedRecords);
+		}
+		// if(response)
 	}
 
 	const searchUser: SubmitHandler<Inputs> = async (form_data) => {
@@ -121,7 +133,7 @@ export default function Index({ user }: PageProps) {
 						variant='gradient'
 						gradient={{ from: '#ed6ea0', to: '#ec8c69', deg: 35 }}
 					>
-						{`ID: ${user.user_metadata.id}`}
+						{`Hospital: ${user.user_metadata.hospitalName}`}
 					</Badge>
 				</Group>
 				<form onSubmit={handleSubmit(searchUser)}>
@@ -205,6 +217,8 @@ export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
 				permanent: false,
 			},
 		};
+
+	console.log(session.user);
 
 	return {
 		props: {

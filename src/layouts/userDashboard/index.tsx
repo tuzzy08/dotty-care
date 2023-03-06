@@ -8,14 +8,25 @@ interface Props {
 	children: React.ReactNode;
 }
 
-import { IconHome2, IconReportMedical, IconSettings } from '@tabler/icons';
+import {
+	IconHome2,
+	IconReportMedical,
+	IconSettings,
+	IconBuildingHospital,
+} from '@tabler/icons';
 
 export const data: Array<Menu_Item> = [
 	{ link: '/dashboard/users', label: 'Home', icon: IconHome2 },
+
+	{
+		link: '/dashboard/users/records',
+		label: 'My Medical Records',
+		icon: IconReportMedical,
+	},
 	{
 		link: '/dashboard/users/hospitals',
 		label: 'Hospitals',
-		icon: IconReportMedical,
+		icon: IconBuildingHospital,
 	},
 	{ link: '/dashboard/users/settings', label: 'Settings', icon: IconSettings },
 ];

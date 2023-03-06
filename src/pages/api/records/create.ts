@@ -11,30 +11,6 @@ export default async function handler(
 	res: NextApiResponse<Data>
 ) {
 	if (req.method === 'POST') {
-		// Enroll Admin User
-		// const { data: response } = await axios.post(
-		// 	'http://localhost:8801/user/enroll',
-		// 	{
-		// 		id: 'admin',
-		// 		secret: 'adminpw',
-		// 	}
-		// );
-
-		// console.log('admin token');
-		// console.log(response.token);
-
-		// if (response.token) {
-		// const { data } = await axios.post(
-		// 	'http://localhost:8801/user/enroll',
-		// 	{ id: req.body.id, secret: req.body.email },
-		// 	{
-		// 		headers: {
-		// 			Authorization: `Bearer ${response.token}`,
-		// 		},
-		// 	}
-		// );
-		// const userToken = data.token;
-		// const { id } = req.body;
 		const { token } = req.body;
 		if (token) {
 			const record = {
@@ -45,6 +21,7 @@ export default async function handler(
 				doctorName: req.body.doctorName,
 				doctorNote: req.body.doctorNote,
 			};
+			console.log(record);
 			const { data } = await axios.post(
 				'http://localhost:8801/invoke/fasthealth-1/fasthealth',
 				{

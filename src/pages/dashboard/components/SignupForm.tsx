@@ -9,12 +9,14 @@ import {
 	Text,
 	NativeSelect,
 	Container,
+	Stack,
 } from '@mantine/core';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import Link from 'next/link';
 import { v4 as uuidv4 } from 'uuid';
 import axios from 'axios';
 import { useAuth } from '../../../lib/auth/useAuth';
+import { useState } from 'react';
 
 type Inputs = {
 	email: string;
@@ -22,24 +24,28 @@ type Inputs = {
 	name: string;
 	mobile: string;
 	accountType: string;
+	hospitalName?: string;
+	hospitalID?: string;
 };
 
 export interface SignupData {
 	email: string;
 	password: string;
-	options?: {
+	options: {
 		data: {
 			id: string;
 			accountType: string;
 			name: string;
 			mobile: string;
+			hospitalName?: string;
+			hospitalID?: string;
 		};
 	};
 }
 
 const useStyles = createStyles((theme) => ({
 	form: {
-		height: 630,
+		minHeight: 660,
 		width: 500,
 		// paddingTop: 20,
 
@@ -63,13 +69,16 @@ const useStyles = createStyles((theme) => ({
 }));
 
 export default function SignupForm({ setVisibleForm }: any) {
+	const [toggle, setToggle] = useState<boolean>(false);
 	const { classes } = useStyles();
 	const { setAuthToken, signUp } = useAuth();
+
 	const {
 		register,
 		handleSubmit,
 		formState: { errors },
 	} = useForm<Inputs>();
+
 	//TODO: USE RIGHT INPUT PROP TYPES
 	const handleSignup: SubmitHandler<Inputs> = async (form_data) => {
 		const id = `${uuidv4()}`;
@@ -83,10 +92,17 @@ export default function SignupForm({ setVisibleForm }: any) {
 						accountType: form_data.accountType,
 						name: form_data.name,
 						mobile: form_data.mobile,
+						hospitalName: form_data.hospitalName,
 					},
 				},
 			};
-
+			if (form_data.hospitalName === 'acron') {
+				signupData.options.data.hospitalID = 'id1';
+			} else if (form_data.hospitalName === 'oakheart') {
+				signupData.options.data.hospitalID = 'id2';
+			} else if (form_data.hospitalName === 'zenith') {
+				signupData.options.data.hospitalID = 'id3';
+			}
 			try {
 				const res = await signUp(signupData);
 				if (res) {
@@ -97,16 +113,25 @@ export default function SignupForm({ setVisibleForm }: any) {
 						email: form_data.email,
 						accountType: form_data.accountType,
 					});
-					if (token && setAuthToken) {
-						console.log(token);
-						// setAuthToken(token);
-					}
+					// if (token && setAuthToken) {
+					// 	console.log(token);
+					// 	// setAuthToken(token);
+					// }
 				}
 			} catch (error) {
 				console.log(error);
 			}
 		}
 	};
+
+	const handleChange = (event: any) => {
+		if (event.target.value === 'Hospital') {
+			setToggle(true);
+		} else {
+			setToggle(false);
+		}
+	};
+
 	const changeForm = () => setVisibleForm('login');
 	return (
 		<Paper className={classes.form} radius={15} p={20}>
@@ -120,52 +145,70 @@ export default function SignupForm({ setVisibleForm }: any) {
 				>
 					Welcome to Fast Health
 				</Title>
-				{/* Login Form */}
-				<form onSubmit={handleSubmit(handleSignup)}>
-					{/* <Group position='center' dir='column'> */}
-					<TextInput
-						label='Full Name'
-						placeholder='First Last Name'
-						size='md'
-						{...register('name')}
-					/>
-					<TextInput
-						label='Mobile'
-						placeholder='234 567 7876'
-						size='md'
-						{...register('mobile')}
-					/>
-					<TextInput
-						label='Email address'
-						placeholder='hello@gmail.com'
-						size='md'
-						{...register('email')}
-					/>
-					<PasswordInput
-						label='Password'
-						placeholder='Your password'
-						mt='md'
-						size='md'
-						{...register('password')}
-					/>
-					<NativeSelect
-						data={[
-							{ value: 'Patient', label: 'Patient' },
-							{ value: 'Hospital', label: 'Hospital' },
-							{ value: 'Ems', label: 'Ems' },
-						]}
-						placeholder='Select Role'
-						label='Select your account type'
-						required
-						{...register('accountType')}
-					/>
-					{/* <Checkbox label="Keep me logged in" mt="xl" size="md" /> */}
+				<Stack spacing={'xl'}>
+					<form onSubmit={handleSubmit(handleSignup)}>
+						{/* <Group position='center' dir='column'> */}
+						<NativeSelect
+							data={[
+								{ value: 'Patient', label: 'Patient' },
+								{ value: 'Hospital', label: 'Hospital' },
+								{ value: 'Ems', label: 'Ems' },
+							]}
+							placeholder='Select Role'
+							label='Select your account type'
+							required
+							{...register('accountType')}
+							onChange={handleChange}
+						/>
+						{toggle ? (
+							<NativeSelect
+								data={[
+									{ value: 'acron', label: 'Acron Hospital' },
+									{ value: 'oakheart', label: 'Oakheart Clinic' },
+									{ value: 'zenith', label: 'Zenith Hospital' },
+								]}
+								placeholder='Select Your Hospital'
+								label='Hospital'
+								required
+								{...register('hospitalName')}
+							/>
+						) : (
+							<></>
+						)}
+						<TextInput
+							label='Full Name'
+							placeholder='First Last Name'
+							size='md'
+							{...register('name')}
+						/>
+						<TextInput
+							label='Mobile'
+							placeholder='234 567 7876'
+							size='md'
+							{...register('mobile')}
+						/>
+						<TextInput
+							label='Email address'
+							placeholder='hello@gmail.com'
+							size='md'
+							{...register('email')}
+						/>
+						<PasswordInput
+							label='Password'
+							placeholder='Your password'
+							mt='md'
+							size='md'
+							{...register('password')}
+						/>
 
-					<Button fullWidth mt='xl' size='md' type='submit'>
-						Register
-					</Button>
-					{/* </Group> */}
-				</form>
+						{/* <Checkbox label="Keep me logged in" mt="xl" size="md" /> */}
+
+						<Button fullWidth mt='xl' size='md' type='submit'>
+							Register
+						</Button>
+						{/* </Group> */}
+					</form>
+				</Stack>
 				<Text align='center' mt='md'>
 					Have an account?{' '}
 					<Link href='' onClick={changeForm}>

@@ -1,6 +1,6 @@
 import { createServerSupabaseClient } from '@supabase/auth-helpers-nextjs';
 import { GetServerSidePropsContext } from 'next';
-import { Container, Group } from '@mantine/core';
+import { Container, Group, Text } from '@mantine/core';
 import { useQuery } from 'react-query';
 import axios from 'axios';
 import { PageProps } from '../types';
@@ -8,6 +8,7 @@ import { Layout } from '../../../layouts';
 import { RecordsTable } from '../components/RecordsTable';
 import ProfileCard from '../../../layouts/components/ProfileCard';
 import { useAuth } from '../../../lib/auth/useAuth';
+import { useState } from 'react';
 
 IndexPage.getLayout = function getLayout(page: any) {
 	return <Layout variant={'patient'}>{page}</Layout>;
@@ -15,39 +16,38 @@ IndexPage.getLayout = function getLayout(page: any) {
 
 export default function IndexPage({ user }: PageProps) {
 	const { authToken, setPermissions } = useAuth();
+	const [myRecords, setMyRecords] = useState<any | null>();
 	console.log('Auth Token');
 	console.log(authToken);
 	// if (authToken) {
-	const {
-		isLoading,
-		error,
-		data: records,
-	} = useQuery(
-		'myRecords',
-		async () => {
-			const { data } = await axios.post(
-				`/api/records/${user.user_metadata.id}`,
-				{
-					token: authToken,
-					id: user.user_metadata.id,
-					email: user.email,
-				}
-			);
-			return data;
-		},
-		{
-			enabled: !!authToken,
-			refetchOnMount: true,
-			refetchOnWindowFocus: false,
-			cacheTime: 300000,
-		}
-	);
-	console.log('Records');
-	console.log(records);
-	// if (data) {
-	// 	console.log('records list');
-	// 	console.log(data);
-	// }
+	// const {
+	// 	isLoading: isLoadingRecords,
+	// 	error,
+	// 	data: records,
+	// } = useQuery(
+	// 	'myRecords',
+	// 	async () => {
+	// 		const { data } = await axios.post(
+	// 			`/api/records/${user.user_metadata.id}`,
+	// 			{
+	// 				token: authToken,
+	// 				id: user.user_metadata.id,
+	// 				email: user.email,
+	// 			}
+	// 		);
+	// 		return data;
+	// 	},
+	// 	{
+	// 		enabled: !!authToken,
+	// 		refetchOnMount: false,
+	// 		refetchOnWindowFocus: false,
+	// 		cacheTime: 300000,
+	// 	}
+	// );
+	// console.log('Records');
+	// console.log(records);
+	// if (records) {
+	// 	setMyRecords(records);
 	// }
 
 	// if (authToken) {
@@ -84,7 +84,8 @@ export default function IndexPage({ user }: PageProps) {
 					name={user.user_metadata.name}
 					email={`${user.email}`}
 				/>
-				<RecordsTable data={[]} />
+				{/* {isLoadingRecords && <Text>Loading</Text>}
+				{records ? <RecordsTable data={myRecords} /> : <></>} */}
 			</Group>
 		</Container>
 	);

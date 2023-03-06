@@ -29,6 +29,7 @@ export default function ParamedicNote({
 	patient_ID,
 	paramedic,
 	setOpened,
+	patientName,
 	setpatientInfo,
 }: any) {
 	const router = useRouter();
@@ -48,6 +49,7 @@ export default function ParamedicNote({
 			noteID,
 			patient_ID,
 			id: paramedic.user_metadata.id,
+			patientName,
 			paramedicName: form_data.paramedicName,
 			email: paramedic.email,
 			paramedicNote: form_data.additionalInfo,

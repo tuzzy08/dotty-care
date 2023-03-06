@@ -33,12 +33,13 @@ export default function Record({
 	const submitHandler: SubmitHandler<Inputs> = async (form_data) => {
 		const recordID = `${uuidv4()}`;
 		const { data } = await axios.post('/api/records/create', {
-			authToken,
+			token: authToken,
 			recordID,
 			patient_ID,
 			id: hospital.user_metadata.id,
 			email: hospital.email,
-			hospitalName: hospital.user_metadata.name,
+			hospitalID: hospital.user_metadata.hospitalID,
+			hospitalName: hospital.user_metadata.hospitalName,
 			doctorName: form_data.doctorName,
 			doctorNote: form_data.additionalInfo,
 		});
@@ -73,27 +74,12 @@ export default function Record({
 					{...register('patient_ID')}
 				/>
 				<TextInput label='Doctor Name' {...register('doctorName')} />
-				{/* <Checkbox.Group
-					defaultValue={['react']}
-					label='Vitals'
-					// description='This is anonymous'
-					withAsterisk
-					{...register('vitals')}
-				>
-					<Checkbox value='option1' label='Option 1' />
-					<Checkbox value='option2' label='Option 2' />
-					<Checkbox value='option3' label='Option 3' />
-					<Checkbox value='option4' label='Option 4' />
-				</Checkbox.Group> */}
 				<Textarea
 					placeholder='Your comment'
 					label='Doctors comment'
 					withAsterisk
 					{...register('additionalInfo')}
 				/>
-				{/* <Box style={{ overflow: 'scroll', maxHeight: 250 }}>
-					<Rte value={value} onChange={onChange} />
-				</Box> */}
 				<Button
 					variant='outline'
 					mt='sm'

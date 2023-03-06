@@ -39,6 +39,7 @@ export default async function handler(
 				const noteData = {
 					noteID: req.body.noteID,
 					patientID: req.body.patient_ID,
+					patientName: req.body.patientName,
 					paramedicID: req.body.id,
 					paramedicName: req.body.paramedicName,
 					paramedicNote: req.body.paramedicNote,

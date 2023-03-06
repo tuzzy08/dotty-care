@@ -7,7 +7,7 @@ import {
 	Button,
 	Modal,
 } from '@mantine/core';
-import { RecordCard } from './RecordCard';
+import { RecordCard, RecordProps } from './RecordCard';
 
 const useStyles = createStyles((theme) => ({
 	header: {
@@ -48,12 +48,25 @@ interface RecordsTableProps {
 	}[];
 }
 
-export function RecordsTable({ data }: RecordsTableProps) {
+export function RecordsTable({ data }: any) {
+	const dataAsObject = data.map((item: any) => JSON.parse(item));
+	console.log(dataAsObject);
+	// console.log(data.hospitalID);
+	const initialValues = {
+		recordID: '',
+		patientID: '',
+		hospitalID: '',
+		hospitalName: '',
+		doctorName: '',
+		doctorNote: '',
+		dateCreated: '',
+	};
 	const { classes, cx } = useStyles();
 	const [scrolled, setScrolled] = useState(false);
 	const [opened, setOpened] = useState(false);
+	const [record, setRecord] = useState<RecordProps>(initialValues);
 
-	const rows = data.map((row) => (
+	const rows = dataAsObject.map((row: RecordProps) => (
 		<tr key={row.hospitalName}>
 			<td>{row.hospitalName}</td>
 			<td>{row.doctorName}</td>
@@ -65,7 +78,10 @@ export function RecordsTable({ data }: RecordsTableProps) {
 						gradient={{ from: 'indigo', to: 'cyan' }}
 						size='xs'
 						radius={10}
-						onClick={() => setOpened(true)}
+						onClick={() => {
+							setRecord(row);
+							setOpened(true);
+						}}
 					>
 						view
 					</Button>
@@ -80,7 +96,7 @@ export function RecordsTable({ data }: RecordsTableProps) {
 			onScrollPositionChange={({ y }) => setScrolled(y !== 0)}
 		>
 			<Modal opened={opened} onClose={() => setOpened(false)} centered>
-				<RecordCard title='Record One' description='Doctors notes here' />
+				<RecordCard {...record} />
 			</Modal>
 			<Text size={'md'} align={'center'} weight={'bold'} pb={25}>
 				My Records
@@ -89,8 +105,8 @@ export function RecordsTable({ data }: RecordsTableProps) {
 				<thead className={cx(classes.header, { [classes.scrolled]: scrolled })}>
 					<tr>
 						<th>Hospital Name</th>
-						<th>Date of visit</th>
 						<th>Doctor Name</th>
+						<th>Date of visit</th>
 						<th>Action</th>
 					</tr>
 				</thead>
