@@ -1,12 +1,14 @@
-import { Property } from 'fabric-contract-api';
+import { Property, Object } from 'fabric-contract-api';
 
 export class NoteInput {
-	@Property()
+	// @Property()
+	noteID: string;
+	// @Property()
+	patientID;
+	// @Property()
 	paramedicID: string;
-	@Property()
-	patientID: string;
-	@Property()
+	// @Property()
 	paramedicName: string;
-	@Property()
+	// @Property()
 	paramedicNote: string;
 }

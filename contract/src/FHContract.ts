@@ -31,7 +31,7 @@ export class FHContract extends Contract {
 		console.log('init called');
 		try {
 			// create composite key as hospital_id
-			const hospital_ID = `acron-${uuidv4()}`;
+			const hospital_ID = `id1`;
 			// create composite key as paramedic_id
 			const paramedic_ID = `fastresp-${uuidv4()}`;
 			// Create some Hospitals & Paramedics
@@ -63,11 +63,12 @@ export class FHContract extends Contract {
 	public async createPatient(
 		ctx: Context,
 		patient_ID: string,
-		fullname: string
+		fullname: string,
+		email: string
 	): Promise<Patient> {
 		//
-		if (!this.checkValid(patient_ID)) throw new Error('Invalid patient ID!');
-		const patient = Factory.createPatient(patient_ID, fullname);
+		// if (!this.checkValid(patient_ID)) throw new Error('Invalid patient ID!');
+		const patient = Factory.createPatient(patient_ID, fullname, email);
 		await ctx.stub.putState(patient_ID, this.marshallObject(patient));
 		console.log('Patient Created');
 		console.log(patient);
@@ -81,23 +82,14 @@ export class FHContract extends Contract {
 	 * @param {String} The Id of the patient
 	 */
 	@Transaction()
-	public async createRecord(
-		ctx: Context,
-		patientID: string,
-		data: RecordInput
-	): Promise<Record> {
-		if (!this.checkValid(patientID)) throw new Error('Invalid patient ID!');
+	public async createRecord(ctx: Context, data: string): Promise<Record> {
+		// if (!this.checkValid(patientID)) throw new Error('Invalid patient ID!');
 		// TODO: CHECK TO ENSURE ONLY PATIENTS CAN CALL THIS FUNCTION
-		const recordID = `rec-${uuidv4()}-${patientID}`;
-		const record: Record = Factory.createRecord({
-			recordID,
-			patientID,
-			hospitalID: data.hospitalID,
-			doctorName: data.doctorName,
-			medicalNote: `${this.checkValid(data.medicalNote)}`,
-			createdAt: ctx.stub.getDateTimestamp.toString(),
-		});
-		await ctx.stub.putState(recordID, this.marshallObject(record));
+		console.log('Record');
+		console.log(data);
+		const dataAsObject = JSON.parse(data);
+		const record: Record = Factory.createRecord(dataAsObject);
+		await ctx.stub.putState(dataAsObject.recordID, this.marshallObject(record));
 		console.log('Record Saved');
 		console.log(record);
 		return record;
@@ -134,23 +126,13 @@ export class FHContract extends Contract {
 	 * @param {String} The Id of the patient
 	 */
 	@Transaction()
-	public async createParamedicNote(
-		ctx: Context,
-		data: NoteInput,
-		patientID: string
-	): Promise<ParamedicNote> {
-		if (!this.checkValid(patientID)) throw new Error('Invalid patient ID!');
+	public async createParamedicNote(ctx: Context, data: string) {
+		console.log(data);
+		const dataAsObject = JSON.parse(data);
+		// if (!this.checkValid(dataAsObject.patientID)) throw new Error('Invalid patient ID!');
 		// TODO: CHECK TO ENSURE ONLY PATIENTS CAN CALL THIS FUNCTION
-		const noteID = `note-${uuidv4()}-${patientID}`;
-		const note: ParamedicNote = Factory.createParamedicNote({
-			noteID,
-			patientID,
-			paramedicID: data.paramedicID,
-			paramedicName: data.paramedicName,
-			paramedicNote: `${this.checkValid(data.paramedicNote)}`,
-			createdAt: ctx.stub.getDateTimestamp.toString(),
-		});
-		await ctx.stub.putState(noteID, this.marshallObject(note));
+		const note: ParamedicNote = Factory.createParamedicNote(dataAsObject);
+		await ctx.stub.putState(dataAsObject.noteID, this.marshallObject(note));
 		console.log('Note Saved');
 		console.log(note);
 		return note;
@@ -169,6 +151,8 @@ export class FHContract extends Contract {
 		hospital_ID: string
 	) {
 		const hospitalAsBytes = await ctx.stub.getState(hospital_ID);
+		console.log('Hospital as bytes');
+		console.log(hospitalAsBytes);
 		if (hospitalAsBytes) {
 			const patientAsBytes = await ctx.stub.getState(patient_ID);
 			if (patientAsBytes) {
@@ -176,11 +160,46 @@ export class FHContract extends Contract {
 				const hospital: Hospital = JSON.parse(hospitalAsBytes.toString());
 				patient.permissions.grantAll = false;
 				patient.permissions.denied.push(hospital.hospital_ID);
-				await ctx.stub.putState(
-					patient.patient_ID,
-					this.marshallObject(patient)
-				);
+				console.log('Patient Object');
+				console.log(patient);
+				await ctx.stub.putState(patient_ID, this.marshallObject(patient));
 				console.log(`Access Suspended for ${hospital.hospital_name}`);
+				return `Access Suspended for ${hospital.hospital_name}`;
+			}
+		}
+	}
+
+	/**
+	 * Grant access to the patient's records for a given hospital
+	 *
+	 * @param {Context} ctx the transaction context
+	 * @param {String} The Id of the hospital
+	 */
+	@Transaction()
+	public async grantAccess(
+		ctx: Context,
+		patient_ID: string,
+		hospital_ID: string
+	) {
+		const hospitalAsBytes = await ctx.stub.getState(hospital_ID);
+		if (hospitalAsBytes) {
+			const patientAsBytes = await ctx.stub.getState(patient_ID);
+			if (patientAsBytes) {
+				const patient: Patient = JSON.parse(patientAsBytes.toString());
+				const hospital: Hospital = JSON.parse(hospitalAsBytes.toString());
+				const index = patient.permissions.denied.indexOf(hospital_ID);
+				if (index > -1) {
+					patient.permissions.denied.splice(index, 1);
+					if (patient.permissions.denied.length < 1) {
+						patient.permissions.grantAll = true;
+					}
+					await ctx.stub.putState(
+						patient.patient_ID,
+						this.marshallObject(patient)
+					);
+					console.log(`Access Granted for ${hospital.hospital_name}`);
+					return `Access Granted for ${hospital.hospital_name}`;
+				}
 			}
 		}
 	}
@@ -218,8 +237,19 @@ export class FHContract extends Contract {
 	async QueryNotesByPatient(ctx: Context, patient_ID: string) {
 		let queryString: any = {};
 		queryString.selector = {};
-		queryString.selector.docType = 'record';
+		queryString.selector.docType = 'note';
 		queryString.selector.patientID = patient_ID;
+		return await this.GetQueryResultForQueryString(
+			ctx,
+			JSON.stringify(queryString)
+		); //shim.success(queryResults);
+	}
+	@Transaction(false)
+	async QueryNotesByParamedic(ctx: Context, paramedic_ID: string) {
+		let queryString: any = {};
+		queryString.selector = {};
+		queryString.selector.docType = 'note';
+		queryString.selector.paramedicID = paramedic_ID;
 		return await this.GetQueryResultForQueryString(
 			ctx,
 			JSON.stringify(queryString)
@@ -239,8 +269,11 @@ export class FHContract extends Contract {
 			const { permissions } = patient;
 			const records = await this.QueryRecordsByPatient(ctx, patient_ID);
 			if (!permissions.grantAll) {
-				if (hospital_ID in permissions.denied) {
-					throw new Error(`Access to records denied!`);
+				if (permissions.denied.includes(hospital_ID)) {
+					return {
+						status: 'denied',
+						message: `Access Denied!`,
+					};
 				}
 			}
 			return records;
@@ -313,6 +346,6 @@ export class FHContract extends Contract {
 	}
 
 	checkValid(value: string) {
-		return value && typeof value === 'string' && value !== '';
+		return value && typeof value === 'string';
 	}
 }

@@ -1,26 +1,28 @@
 import { Property } from 'fabric-contract-api';
 
 export class ParamedicNote {
-	@Property()
+	// @Property()
 	docType: string;
 
-	@Property()
+	// @Property()
 	noteID?: string;
 
-	@Property()
+	patientName: string;
+
+	// @Property()
 	patientID: string;
 
-	@Property()
+	// @Property()
 	paramedicID: string;
 
-	@Property()
+	// @Property()
 	paramedicName: string;
 
-	@Property()
-	paramedicNote: string;
+	// @Property()
+	paramedicNote: any;
 
-	@Property()
-	createdAt: string;
+	// @Property()
+	// createdAt: string;
 
 	// @Property()
 	// updatedAt: string;

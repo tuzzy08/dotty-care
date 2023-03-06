@@ -4,45 +4,21 @@ import { Hospital } from './Hospital';
 import { Paramedic } from './Paramedic';
 import { ParamedicNote } from './ParamedicNote';
 
-export function createRecord({
-	recordID,
-	patientID,
-	hospitalID,
-	doctorName,
-	medicalNote,
-	createdAt,
-}): Record {
-	return {
-		docType: 'record',
-		recordID,
-		patientID,
-		hospitalID,
-		doctorName,
-		medicalNote,
-		createdAt,
-	};
+export function createRecord(data): Record {
+	data.docType = 'record';
+	return data;
 }
 
-export function createParamedicNote({
-	patientID,
-	noteID,
-	paramedicID,
-	paramedicName,
-	paramedicNote,
-	createdAt,
-}): ParamedicNote {
-	return {
-		docType: 'note',
-		noteID,
-		patientID,
-		paramedicID,
-		paramedicName,
-		paramedicNote,
-		createdAt,
-	};
+export function createParamedicNote(data): ParamedicNote {
+	data.docType = 'note';
+	return data;
 }
 
-export function createPatient(patient_ID: string, full_name: string): Patient {
+export function createPatient(
+	patient_ID: string,
+	full_name: string,
+	email: string
+): Patient {
 	// Init permissions
 	const permissions = { grantAll: true, denied: [] };
 	// Create patient object
@@ -50,6 +26,7 @@ export function createPatient(patient_ID: string, full_name: string): Patient {
 		docType: 'patient',
 		patient_ID,
 		full_name,
+		email,
 		permissions,
 	};
 	return patient;
