@@ -13,11 +13,16 @@ import {
 	IconReportMedical,
 	IconSettings,
 	IconUsers,
+	IconFile,
 } from '@tabler/icons';
 
 export const data: Array<Menu_Item> = [
 	{ link: '/dashboard/hospital', label: 'Home', icon: IconHome },
-	// { link: '/dashboard/hospital/patients', label: 'Patients', icon: IconUsers },
+	{
+		link: '/dashboard/hospital/notes',
+		label: 'Emergency Notes',
+		icon: IconFile,
+	},
 ];
 
 export default function HospitalLayout({ children }: Props) {
