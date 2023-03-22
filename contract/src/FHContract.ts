@@ -33,20 +33,34 @@ export class FHContract extends Contract {
 			// create composite key as hospitalID
 			const hospitalID = `id1`;
 			// create composite key as paramedicID
-			const paramedicID = `fastresp-${uuidv4()}`;
+			// const paramedicID = `fastresp-${uuidv4()}`;
 			// Create some Hospitals & Paramedics
-			const new_hospital = await this.createHospital(
+			const new_hospital1 = await this.createHospital(
 				ctx,
 				hospitalID,
 				'Acron Hospital'
 			);
-			const new_paramedic = await this.createParamedic(
+			const new_hospital2 = await this.createHospital(
 				ctx,
-				paramedicID,
-				'FastResp'
+				'id2',
+				'OakHeart Clinic'
 			);
-			console.log(new_hospital);
-			console.log(new_paramedic);
+			const new_hospital3 = await this.createHospital(
+				ctx,
+				'id3',
+				'Zenith Hospital'
+			);
+			// const new_paramedic = await this.createParamedic(
+			// 	ctx,
+			// 	paramedicID,
+			// 	'FastResp'
+			// );
+			console.log('new hospitals');
+			console.log(new_hospital1);
+			console.log(new_hospital2);
+			console.log(new_hospital3);
+
+			// console.log(new_paramedic);
 		} catch (error) {
 			console.log(error);
 		}
