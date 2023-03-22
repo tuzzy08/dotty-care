@@ -47,10 +47,11 @@ interface NoteProps {
 export default function Note({ note }: NoteProps) {
 	const { classes } = useStyles();
 	const incidentDetails = Object.values(note.incidentDetails);
-	const treatmentDetails = Object.values(note.treatmentDetails);
-	const neuroResponse = Object.values(note.assessmentDetails.neuroResponse);
-	const bodyAssessment = Object.values(note.assessmentDetails.bodyAssessment);
-	const generalAssessment = Object.values(note.assessmentDetails.neuroResponse);
+	const treatmentDetails = Object.entries(note.treatmentDetails);
+	const neuroResponse = Object.keys(note.assessmentDetails.neuroResponse);
+	console.log(treatmentDetails);
+	const bodyAssessment = Object.keys(note.assessmentDetails.bodyAssessment);
+	const generalAssessment = Object.keys(note.assessmentDetails.neuroResponse);
 	return (
 		<Stack>
 			<Paper withBorder radius='md' className={classes.card}>
@@ -105,10 +106,16 @@ export default function Note({ note }: NoteProps) {
 						</Title>
 					</Group>
 					{treatmentDetails.map((response) => (
-						<Text>{`${response}`}</Text>
+						<>
+							<Text>{`${response}`}</Text>
+							{/* <Text>
+								Procedure Start Time: `$
+								{note.treatmentDetails.procedureStartTime.slice(0)}`
+							</Text> */}
+						</>
 					))}
+					<Text mt={'5px'}>Paramedic: {`${note.paramedicName}`}</Text>
 				</Stack>
-				<Text>Paramedic: {`${note.paramedicName}`}</Text>
 			</Paper>
 		</Stack>
 	);

@@ -50,16 +50,14 @@ export function RecordCard({ record }: RecordProps) {
 	const { classes } = useStyles();
 	const incidentDetails = Object.values(record.incidentDetails);
 	const treatmentDetails = Object.values(record.treatmentDetails);
-	const neuroResponse = Object.values(record.assessmentDetails.neuroResponse);
-	const bodyAssessment = Object.values(record.assessmentDetails.bodyAssessment);
-	const generalAssessment = Object.values(
-		record.assessmentDetails.neuroResponse
-	);
+	const neuroResponse = Object.keys(record.assessmentDetails.neuroResponse);
+	const bodyAssessment = Object.keys(record.assessmentDetails.bodyAssessment);
+	const generalAssessment = Object.keys(record.assessmentDetails.neuroResponse);
 
 	return (
 		<Stack>
 			<Paper withBorder radius='md' className={classes.card}>
-				<Text>Patient: {`${record.patientName}`}</Text>
+				<Text>Patient Name: {`${record.patientName}`}</Text>
 				<Stack spacing={'xl'}>
 					<Title order={3} weight={100} underline align='center'>
 						Neuro Assesment
@@ -112,8 +110,8 @@ export function RecordCard({ record }: RecordProps) {
 					{treatmentDetails.map((response) => (
 						<Text>{`${response}`}</Text>
 					))}
+					<Text>Doctor on call: {`${record.doctorName}`}</Text>
 				</Stack>
-				<Text>Doctor: {`${record.doctorName}`}</Text>
 			</Paper>
 		</Stack>
 	);

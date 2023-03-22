@@ -114,10 +114,6 @@ export default function SignupForm({ setVisibleForm }: any) {
 						email: form_data.email,
 						accountType: form_data.accountType,
 					});
-					// if (token && setAuthToken) {
-					// 	console.log(token);
-					// 	// setAuthToken(token);
-					// }
 				} else if (res?.data.user === null) {
 					showNotification({
 						title: 'Fast Health',

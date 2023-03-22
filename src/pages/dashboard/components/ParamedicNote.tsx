@@ -1,17 +1,12 @@
-import { Text, Button, Space, Stepper, Group } from '@mantine/core';
+import { Text, Button, Space, Stepper, Group, Stack } from '@mantine/core';
 import { useStateMachine } from 'little-state-machine';
 import { showNotification } from '@mantine/notifications';
 import { IconCheck } from '@tabler/icons';
 import axios from 'axios';
-import { useState, useRef, DetailedHTMLProps, FormHTMLAttributes } from 'react';
-import { useForm, SubmitHandler } from 'react-hook-form';
+import { useState, useEffect } from 'react';
 import { v4 as uuidv4 } from 'uuid';
+import { useForm } from '@mantine/form';
 import { updateState } from '../../../utils/updateParamedicNoteState';
-import {
-	IncidentDetailsInput,
-	TreatmentDetailsInput,
-	AssessmentInput,
-} from '../../../types/formTypes';
 
 import { AssessmentForm, IncidentForm, TreatmentForm } from './forms';
 import { ParamedicNoteState } from 'state-machine';
@@ -21,11 +16,14 @@ export default function ParamedicNote({
 	paramedic,
 	patientName,
 }: any) {
+	const formOne = useForm();
+	const formTwo = useForm();
+	const formThree = useForm();
+
+	useEffect(() => {
+		formOne.setValues({ patientID });
+	}, []);
 	const [active, setActive] = useState(0);
-	// References to form DOM nodes
-	const formOneRef = useRef<HTMLFormElement>(null);
-	const formTwoRef = useRef<HTMLFormElement>(null);
-	const formThreeRef = useRef<HTMLFormElement>(null);
 
 	const [highestStepVisited, setHighestStepVisited] = useState(active);
 	const { actions, state } = useStateMachine({ updateState });
@@ -38,14 +36,75 @@ export default function ParamedicNote({
 		}
 		console.log(`next step: ${nextStep}`);
 
-		if (nextStep === 1 && formOneRef.current) {
-			formOneRef.current.requestSubmit();
-		} else if (nextStep === 2 && formTwoRef.current) {
-			formTwoRef.current.requestSubmit();
-		} else if (nextStep === 3 && formThreeRef.current) {
-			formThreeRef.current.requestSubmit();
+		if (nextStep === 1 && formOne.values) {
+			const { paramedicName, patientID, ...rest } = formOne.values;
+			actions.updateState({
+				paramedicName,
+				patientID,
+				incidentDetails: { ...rest },
+			});
+		} else if (nextStep === 2 && formTwo.values) {
+			const data = formTwo.values;
+			const neuroResponse = {
+				normal: data.normal,
+				confused: data.confused,
+				combative: data.combative,
+				dysphasia: data.dysphasia,
+				hallucinations: data.hallucinations,
+				seizures: data.seizures,
+				lethargic: data.lethargic,
+				tremors: data.tremors,
+				others: data.others,
+			};
+
+			const bodyAssessment = {
+				cardiovascular: data.cardiovascular,
+				endocrine: data.endocrine,
+				centralNervousSystem: data.centralNervousSystem,
+				gI: data.gI,
+				musculoskeletal: data.musculoskeletal,
+				integumentary: data.integumentary,
+				reproductive: data.reproductive,
+				respiratory: data.respiratory,
+				renal: data.renal,
+			};
+
+			const generalAssessment = {
+				gI: data.gI,
+				musculoskeletal: data.musculoskeletal,
+				integumentary: data.integumentary,
+				reproductive: data.reproductive,
+				respiratory: data.respiratory,
+				renal: data.renal,
+				asthma: data.asthma,
+				cHF: data.cHF,
+				diabetes: data.diabetes,
+				hypertension: data.hypertension,
+				seizureDisorder: data.seizureDisorder,
+				stroke: data.stroke,
+				cancer: data.cancer,
+				cOPD: data.cOPD,
+				angina: data.angina,
+				myocardialInfraction: data.myocardialInfraction,
+				renalDisease: data.renalDisease,
+				psychiatricIllness: data.psychiatricIllness,
+				dNROrder: data.dNROrder,
+				other: data.other,
+			};
+
+			actions.updateState({
+				assessmentDetails: { neuroResponse, bodyAssessment, generalAssessment },
+			});
+			console.log('form 2 values');
+			console.log(formTwo.values);
+		} else if (nextStep === 3 && formThree.values) {
+			actions.updateState({
+				treatmentDetails: { ...formThree.values },
+			});
 			console.log('current State');
 			console.log(state);
+			console.log('form 3 values');
+			console.log(formThree.values);
 		}
 
 		setActive(nextStep);
@@ -77,86 +136,6 @@ export default function ParamedicNote({
 		}
 	};
 
-	const handleincidentFormSubmit: SubmitHandler<IncidentDetailsInput> = async (
-		data,
-		event
-	) => {
-		event?.preventDefault();
-		console.log(data);
-		const { paramedicName, patientID, ...rest } = data;
-		actions.updateState({
-			paramedicName,
-			patientID,
-			incidentDetails: { ...rest },
-		});
-	};
-
-	const handleTreatmentFormSubmit: SubmitHandler<
-		TreatmentDetailsInput
-	> = async (data) => {
-		console.log(data);
-		actions.updateState({
-			treatmentDetails: { ...data },
-		});
-	};
-
-	const handleAssessmentFormSubmit: SubmitHandler<AssessmentInput> = async (
-		data: AssessmentInput
-	) => {
-		console.log(data);
-
-		const neuroResponse = {
-			normal: data.normal,
-			confused: data.confused,
-			combative: data.combative,
-			dysphasia: data.dysphasia,
-			hallucinations: data.hallucinations,
-			seizures: data.seizures,
-			lethargic: data.lethargic,
-			tremors: data.tremors,
-			others: data.others,
-		};
-
-		const bodyAssessment = {
-			cardiovascular: data.cardiovascular,
-			endocrine: data.endocrine,
-			centralNervousSystem: data.centralNervousSystem,
-			gI: data.gI,
-			musculoskeletal: data.musculoskeletal,
-			integumentary: data.integumentary,
-			reproductive: data.reproductive,
-			respiratory: data.respiratory,
-			renal: data.renal,
-		};
-
-		const generalAssessment = {
-			gI: data.gI,
-			musculoskeletal: data.musculoskeletal,
-			integumentary: data.integumentary,
-			reproductive: data.reproductive,
-			respiratory: data.respiratory,
-			renal: data.renal,
-			asthma: data.asthma,
-			cHF: data.cHF,
-			diabetes: data.diabetes,
-			hypertension: data.hypertension,
-			seizureDisorder: data.seizureDisorder,
-			stroke: data.stroke,
-			cancer: data.cancer,
-			cOPD: data.cOPD,
-			angina: data.angina,
-			myocardialInfraction: data.myocardialInfraction,
-			renalDisease: data.renalDisease,
-			psychiatricIllness: data.psychiatricIllness,
-			dNROrder: data.dNROrder,
-			other: data.other,
-		};
-
-		actions.updateState({
-			assessmentDetails: { neuroResponse, bodyAssessment, generalAssessment },
-		});
-	};
-
 	// Allow the user to freely go back and forth between visited steps.
 	const shouldAllowSelectStep = (step: number) =>
 		highestStepVisited >= step && active !== step;
@@ -168,36 +147,28 @@ export default function ParamedicNote({
 					label='Incident Details'
 					allowStepSelect={shouldAllowSelectStep(0)}
 				>
-					<IncidentForm
-						submitHandler={handleincidentFormSubmit}
-						ref={formOneRef}
-						patientID={`${patientID}`}
-					/>
+					<IncidentForm form={formOne} patientID={`${patientID}`} />
 				</Stepper.Step>
 				<Stepper.Step
 					label='Assessment'
 					allowStepSelect={shouldAllowSelectStep(1)}
 				>
-					<AssessmentForm
-						submitHandler={handleAssessmentFormSubmit}
-						ref={formTwoRef}
-					/>
+					<AssessmentForm form={formTwo} />
 				</Stepper.Step>
 				<Stepper.Step
 					label='Treatment'
 					allowStepSelect={shouldAllowSelectStep(2)}
 				>
-					<TreatmentForm
-						submitHandler={handleTreatmentFormSubmit}
-						ref={formThreeRef}
-					/>
+					<TreatmentForm form={formThree} />
 				</Stepper.Step>
 
 				<Stepper.Completed>
+					<Stack spacing={'lg'}>
+						<Button onClick={() => handleFinalsubmit(state.paramedicNoteState)}>
+							Submit
+						</Button>
+					</Stack>
 					<Text>Completed, click to submit form</Text>
-					<Button onClick={() => handleFinalsubmit(state.paramedicNoteState)}>
-						Submit
-					</Button>
 				</Stepper.Completed>
 			</Stepper>
 

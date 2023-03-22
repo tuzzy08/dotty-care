@@ -58,13 +58,6 @@ interface TableSortProps {
 	data: RowData[];
 }
 
-const initialValues = {
-	recordID: '',
-	patientName: '',
-	hospitalName: '',
-	doctorName: '',
-};
-
 interface ThProps {
 	children: React.ReactNode;
 	reversed?: boolean;
@@ -128,7 +121,7 @@ interface Props {
 	list: [];
 }
 
-export default function NotesTable({ list }: any) {
+export default function NotesTable({ list = [] }: any) {
 	const parsedData = list.map((item: any) => filterObject(JSON.parse(item)));
 	const [note, setNote] = useState<ParamedicNoteState | undefined>();
 	console.log('data');
@@ -159,28 +152,34 @@ export default function NotesTable({ list }: any) {
 		);
 	};
 
-	const rows = sortedData.map((row: ParamedicNoteState) => (
-		<tr key={row.patientName}>
-			<td>{row.patientName}</td>
-			<td>{row.paramedicName}</td>
-			<td>{row.incidentDetails.dateofincident.slice(0, 10)}</td>
+	const rows = sortedData.map((row: ParamedicNoteState) => {
+		const dateofincident = row.incidentDetails.dateofincident
+			? row.incidentDetails.dateofincident.slice(0, 10)
+			: '--:--:--';
 
-			<td>
-				{
-					<Button
-						onClick={() => {
-							setNote(row);
-							setOpened(true);
-						}}
-						variant='outline'
-						size='sm'
-					>
-						view
-					</Button>
-				}
-			</td>
-		</tr>
-	));
+		return (
+			<tr key={row.patientName}>
+				<td>{row.patientName}</td>
+				<td>{row.paramedicName}</td>
+				<td>{dateofincident}</td>
+
+				<td>
+					{
+						<Button
+							onClick={() => {
+								setNote(row);
+								setOpened(true);
+							}}
+							variant='outline'
+							size='sm'
+						>
+							view
+						</Button>
+					}
+				</td>
+			</tr>
+		);
+	});
 
 	return (
 		<Box

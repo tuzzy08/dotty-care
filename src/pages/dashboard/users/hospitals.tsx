@@ -8,7 +8,6 @@ import { Layout } from '../../../layouts';
 import ProfileCard from '../../../layouts/components/ProfileCard';
 import HospitalList from '../../../layouts/components/HospitalList';
 import { useAuth } from '../../../lib/auth';
-import { useState } from 'react';
 
 HospitalsPage.getLayout = function getLayout(page: any) {
 	return <Layout variant={'patient'}>{page}</Layout>;
@@ -16,9 +15,7 @@ HospitalsPage.getLayout = function getLayout(page: any) {
 
 export default function HospitalsPage({ user }: PageProps) {
 	const { authToken } = useAuth();
-	const [permissions, setPermissions] = useState();
 	let dataAsObjects;
-	// if (authToken) {
 	const { isLoading, error, data } = useQuery(
 		'hospitals',
 		async () => {
@@ -70,7 +67,7 @@ export default function HospitalsPage({ user }: PageProps) {
 					name={user.user_metadata.name}
 					email={`${user.email}`}
 				/>
-				{/* <HospitalList data={data} /> */}
+
 				{isLoading && <Text>Loading</Text>}
 				{dataAsObjects && res ? (
 					<HospitalList
