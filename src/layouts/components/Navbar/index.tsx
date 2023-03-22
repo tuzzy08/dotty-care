@@ -13,6 +13,7 @@ const useStyles = createStyles((theme, _params, getRef) => {
 				variant: 'filled',
 				color: theme.primaryColor,
 			}).background,
+			// height: '100vh',
 		},
 
 		version: {
@@ -36,8 +37,8 @@ const useStyles = createStyles((theme, _params, getRef) => {
 		},
 
 		footer: {
-			paddingTop: theme.spacing.md,
-			marginTop: theme.spacing.md,
+			// paddingTop: theme.spacing.md,
+			// marginTop: theme.spacing.md,
 			borderTop: `1px solid ${theme.fn.lighten(
 				theme.fn.variant({ variant: 'filled', color: theme.primaryColor })
 					.background!,
@@ -139,10 +140,12 @@ export default function NavbarSimpleColored({ opened, data }: Props) {
           <IconSwitchHorizontal className={classes.linkIcon} stroke={1.5} />
           <span>Change account</span>
         </a> */}
+				{/* <IconLogout className={classes.linkIcon} stroke={1.5} />
+				<span>Logout</span> */}
 
-				<Navbar.Section className={classes.link} onClick={signOut}>
+				<Navbar.Section className={classes.link} onClick={signOut} grow>
 					<IconLogout className={classes.linkIcon} stroke={1.5} />
-					<span>Logout</span>
+					<span className={classes.link}>Logout</span>
 				</Navbar.Section>
 			</Navbar.Section>
 		</Navbar>

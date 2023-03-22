@@ -33,10 +33,10 @@ export default function EmsLayout({ children }: Props) {
 	const [opened, setOpened] = useState<boolean>(false);
 	return (
 		<AppShell
-			fixed={false}
 			styles={{
 				main: {
-					body: { minHeight: '100vh' },
+					// height: '100vh',
+					// body: { minHeight: '100vh' },
 					background:
 						theme.colorScheme === 'dark'
 							? theme.colors.dark[8]

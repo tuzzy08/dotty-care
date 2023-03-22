@@ -30,7 +30,7 @@ export default function HospitalLayout({ children }: Props) {
 	const [opened, setOpened] = useState<boolean>(false);
 	return (
 		<AppShell
-			fixed={false}
+			// fixed={false}
 			styles={{
 				main: {
 					body: { minHeight: '100vh' },
