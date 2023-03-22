@@ -18,8 +18,11 @@ import axios from 'axios';
 import { SignupData } from '../pages/dashboard/components/SignupForm';
 
 export type AuthResponse = {
-	user: User | null;
-	session: Session | null;
+	message: string;
+	data: {
+		user: User | null;
+		session: Session | null;
+	};
 };
 
 async function getToken(id: string = '', email: string = '') {
@@ -35,8 +38,8 @@ export type AuthContextProps = {
 	signUp: (payload: SupabaseSignupPayload) => Promise<AuthResponse | null>;
 	signIn: (payload: SupabaseSignInPayload) => Promise<AuthResponse | null>;
 	signOut: () => void;
-	setAuthToken: Dispatch<SetStateAction<string | null>>;
-	authToken: string | null;
+	setAuthToken: Dispatch<SetStateAction<string>>;
+	authToken: string;
 	loggedIn: boolean;
 	loading: boolean;
 	userLoading: boolean;
@@ -53,7 +56,7 @@ appEventEmitter;
 export function AuthProvider({ children }: any) {
 	const router = useRouter();
 	const [loading, setLoading] = useState(false);
-	const [authToken, setAuthToken] = useState<string | null>(null);
+	const [authToken, setAuthToken] = useState<string>('');
 	const supabase = useSupabaseClient();
 	const [user, setUser] = useState<User | null>(null);
 	const [userLoading, setUserLoading] = useState(true);
@@ -117,26 +120,31 @@ export function AuthProvider({ children }: any) {
 	}, []);
 
 	const signUp = async (payload: SignupData): Promise<AuthResponse | null> => {
-		let response = null;
+		// let response = null;
 		try {
 			setLoading(true);
 			const { data, error } = await supabase.auth.signUp(payload);
 			if (error) {
+				console.log('signup errors');
 				console.log({ message: error.message, type: 'error' });
+				return { message: error.message, data: { user: null, session: null } };
 			} else {
 				console.log({
 					message:
 						'Signup successful. Please check your inbox for a confirmation email!',
 					type: 'success',
 				});
-				response = data;
+				return {
+					message: 'success',
+					data: { user: data.user, session: data.session },
+				};
 			}
 		} catch (error: any) {
 			console.log({ message: error.error_description || error, type: 'error' });
 		} finally {
 			setLoading(false);
 		}
-		return response;
+		return null;
 	};
 
 	const signIn = async (
@@ -148,13 +156,17 @@ export function AuthProvider({ children }: any) {
 			const { data, error } = await supabase.auth.signInWithPassword(payload);
 			if (error) {
 				console.log({ message: error.message, type: 'error' });
+				return { message: error.message, data: { user: null, session: null } };
 			} else {
 				console.log({
 					message: "Log in successful. I'll redirect you once I'm done",
 					type: 'success',
 				});
 				if (data) {
-					res = data;
+					return {
+						message: 'success',
+						data: { user: data.user, session: data.session },
+					};
 				}
 			}
 		} catch (error: any) {

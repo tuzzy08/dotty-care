@@ -1,5 +1,16 @@
-import { createStyles, Paper, Text, ThemeIcon } from '@mantine/core';
-import { IconColorSwatch } from '@tabler/icons';
+import {
+	createStyles,
+	Flex,
+	Group,
+	List,
+	Paper,
+	Stack,
+	Text,
+	ThemeIcon,
+	Title,
+} from '@mantine/core';
+import { IconCircleCheck } from '@tabler/icons';
+import { RecordState } from 'state-machine';
 
 const useStyles = createStyles((theme) => ({
 	card: {
@@ -32,40 +43,78 @@ const useStyles = createStyles((theme) => ({
 }));
 
 export interface RecordProps {
-	recordID: string;
-	patientID: string;
-	hospitalID: string;
-	hospitalName?: string;
-	doctorName: string;
-	doctorNote: string;
-	dateCreated?: string;
+	record: RecordState;
 }
 
-export function RecordCard({
-	hospitalName,
-	doctorName,
-	doctorNote,
-}: RecordProps) {
+export function RecordCard({ record }: RecordProps) {
 	const { classes } = useStyles();
+	const incidentDetails = Object.values(record.incidentDetails);
+	const treatmentDetails = Object.values(record.treatmentDetails);
+	const neuroResponse = Object.values(record.assessmentDetails.neuroResponse);
+	const bodyAssessment = Object.values(record.assessmentDetails.bodyAssessment);
+	const generalAssessment = Object.values(
+		record.assessmentDetails.neuroResponse
+	);
+
 	return (
-		<Paper withBorder radius='md' className={classes.card}>
-			<ThemeIcon
-				size='xl'
-				radius='md'
-				variant='gradient'
-				gradient={{ deg: 0, from: 'pink', to: 'orange' }}
-			>
-				<IconColorSwatch size={28} stroke={1.5} />
-			</ThemeIcon>
-			<Text size='xl' weight={500} mt='md'>
-				{`Hospital: ${hospitalName}`}
-			</Text>
-			<Text size='sm' mt='sm' color='dimmed'>
-				{`Doctor: ${doctorName}`}
-			</Text>
-			<Text size='sm' mt='sm' color='dimmed'>
-				{`Doctor's Notes: ${doctorNote}`}
-			</Text>
-		</Paper>
+		<Stack>
+			<Paper withBorder radius='md' className={classes.card}>
+				<Text>Patient: {`${record.patientName}`}</Text>
+				<Stack spacing={'xl'}>
+					<Title order={3} weight={100} underline align='center'>
+						Neuro Assesment
+					</Title>
+					{/* <hr /> */}
+					<Group>
+						{neuroResponse.map((response) => (
+							<Group>
+								<ThemeIcon color='teal' size={24} radius='xl'>
+									<IconCircleCheck size={16} />
+								</ThemeIcon>
+								{`${response}`}
+							</Group>
+						))}
+					</Group>
+
+					<Title order={3} weight={100} underline align='center'>
+						Body Assesment
+					</Title>
+					<Group>
+						{bodyAssessment.map((response) => (
+							<Group>
+								<ThemeIcon color='teal' size={24} radius='xl'>
+									<IconCircleCheck size={16} />
+								</ThemeIcon>
+								{`${response}`}
+							</Group>
+						))}
+					</Group>
+
+					<Title order={3} weight={100} underline align='center'>
+						General Assesment
+					</Title>
+					<Group>
+						{generalAssessment.map((response) => (
+							<Group>
+								<ThemeIcon color='teal' size={24} radius='xl'>
+									<IconCircleCheck size={16} />
+								</ThemeIcon>
+								{`${response}`}
+							</Group>
+						))}
+					</Group>
+
+					<Group>
+						<Title order={3} weight={100} underline align='center'>
+							Treatment Details
+						</Title>
+					</Group>
+					{treatmentDetails.map((response) => (
+						<Text>{`${response}`}</Text>
+					))}
+				</Stack>
+				<Text>Doctor: {`${record.doctorName}`}</Text>
+			</Paper>
+		</Stack>
 	);
 }

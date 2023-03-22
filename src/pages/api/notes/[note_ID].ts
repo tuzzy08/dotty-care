@@ -12,40 +12,44 @@ export default async function handler(
 ) {
 	if (req.method === 'POST') {
 		// Enroll Admin User
-		const { data: response } = await axios.post(
+		const { data } = await axios.post(
 			'http://localhost:8801/user/enroll',
 			{
 				id: 'admin',
 				secret: 'adminpw',
 			}
+			// {
+			// 	headers: {
+			// 		'Content-Type': 'application/json',
+			// 	},
+			// }
 		);
 
-		console.log('admin token');
-		console.log(response.token);
+		const adminToken = data.token;
 
-		if (response.token) {
+		console.log('admin token');
+		console.log(adminToken);
+
+		if (adminToken) {
 			const { data } = await axios.post(
 				'http://localhost:8801/user/enroll',
-				{
-					id: req.body.paramedicID,
-					secret: req.body.paramedicEmail,
-				},
+				{ id: req.body.id, secret: req.body.email },
 				{
 					headers: {
-						Authorization: `Bearer ${response.token}`,
+						Authorization: `Bearer ${adminToken}`,
 					},
 				}
 			);
-			const { paramedicID } = req.body;
+			const { note_ID } = req.query;
 			const userToken = data.token;
-			if (paramedicID) {
-				// console.log(req.body);
-				const { ...noteData } = req.body;
-				const { data } = await axios.post(
-					'http://localhost:8801/invoke/fasthealth-1/fasthealth',
+			if (note_ID) {
+				const {
+					data: { response },
+				} = await axios.post(
+					'http://localhost:8801/query/fasthealth-1/fasthealth',
 					{
-						method: 'FHContract:createParamedicNote',
-						args: [JSON.stringify(noteData)],
+						method: 'FHContract:GetNoteByID',
+						args: [note_ID],
 					},
 					{
 						headers: {
@@ -53,8 +57,8 @@ export default async function handler(
 						},
 					}
 				);
-				console.log(data);
-				res.status(200).send(data);
+				console.log(response);
+				res.status(200).send(response);
 			}
 		}
 	}

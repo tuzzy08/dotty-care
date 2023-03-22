@@ -11,14 +11,14 @@ export default async function handler(
 ) {
 	if (req.method === 'POST') {
 		const { token } = req.body;
-		const { patient_ID } = req.query;
+		const { patientID } = req.query;
 		const { hospitalID } = req.body;
-		if (patient_ID && token) {
+		if (patientID && token) {
 			const { data } = await axios.post(
 				'http://localhost:8801/query/fasthealth-1/fasthealth',
 				{
 					method: 'FHContract:getRecordsForPatient',
-					args: [patient_ID, hospitalID],
+					args: [patientID, hospitalID],
 				},
 				{
 					headers: {
@@ -26,7 +26,7 @@ export default async function handler(
 					},
 				}
 			);
-			console.log('DAta');
+			console.log('Data');
 			console.log(data.response);
 			if (data.response.status === 'denied') {
 				res.status(200).send(data.response.status);

@@ -1,3 +1,4 @@
+// Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import type { NextApiRequest, NextApiResponse } from 'next';
 import axios from 'axios';
 
@@ -11,40 +12,39 @@ export default async function handler(
 ) {
 	if (req.method === 'POST') {
 		// Enroll Admin User
-		const { data: response } = await axios.post(
-			'http://localhost:8801/user/enroll',
-			{
-				id: 'admin',
-				secret: 'adminpw',
-			}
-		);
+		const { data } = await axios.post('http://localhost:8801/user/enroll', {
+			id: 'admin',
+			secret: 'adminpw',
+		});
 
-		console.log('admin token');
-		console.log(response.token);
+		const adminToken = data.token;
 
-		if (response.token) {
+		if (adminToken) {
 			const { data } = await axios.post(
 				'http://localhost:8801/user/enroll',
-				{
-					id: req.body.doctorID,
-					secret: req.body.doctorEmail,
-				},
+				{ id: req.body.id, secret: req.body.email },
 				{
 					headers: {
-						Authorization: `Bearer ${response.token}`,
+						Authorization: `Bearer ${adminToken}`,
 					},
 				}
 			);
-			const { doctorID } = req.body;
+
+			// if (data.token) res.status(200).send(data.token);
+			const { hospitalID } = req.query;
+			const { id } = req.body;
 			const userToken = data.token;
-			if (doctorID) {
-				console.log(req.body);
-				const { ...recordData } = req.body;
+
+			if (hospitalID) {
+				const method =
+					req.body.accessType === 'suspend'
+						? 'FHContract:suspendAccess'
+						: 'FHContract:grantAccess';
 				const { data } = await axios.post(
 					'http://localhost:8801/invoke/fasthealth-1/fasthealth',
 					{
-						method: 'FHContract:createRecord',
-						args: [JSON.stringify(recordData)],
+						method: method,
+						args: [`${id}`, `${hospitalID}`],
 					},
 					{
 						headers: {
@@ -52,7 +52,6 @@ export default async function handler(
 						},
 					}
 				);
-				console.log(data);
 				res.status(200).send(data);
 			}
 		}

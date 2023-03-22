@@ -1,11 +1,10 @@
 export type SupabaseSignInPayload = {
-  email: string,
-  password: string,
-}
-
+	email: string;
+	password: string;
+};
 
 export type SupabaseSignupPayload = {
-  email: string,
-  password: string,
-  options?: any,
-}
+	email: string;
+	password: string;
+	options: any;
+};

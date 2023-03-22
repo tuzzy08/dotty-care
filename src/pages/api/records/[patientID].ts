@@ -11,14 +11,14 @@ export default async function handler(
 	res: NextApiResponse<Data>
 ) {
 	if (req.method === 'POST') {
-		const { patient_ID } = req.query;
+		const { patientID } = req.query;
 		const { token } = req.body;
-		if (patient_ID && token) {
+		if (patientID && token) {
 			const { data } = await axios.post(
 				'http://localhost:8801/query/fasthealth-1/fasthealth',
 				{
 					method: 'FHContract:QueryRecordsByPatient',
-					args: [patient_ID],
+					args: [patientID],
 				},
 				{
 					headers: {

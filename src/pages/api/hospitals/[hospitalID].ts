@@ -19,6 +19,9 @@ export default async function handler(
 
 		const adminToken = data.token;
 
+		console.log('admin token');
+		console.log(adminToken);
+
 		if (adminToken) {
 			const { data } = await axios.post(
 				'http://localhost:8801/user/enroll',
@@ -29,22 +32,17 @@ export default async function handler(
 					},
 				}
 			);
-
+			// console.log('usr tkn');
+			// console.log(data);
 			// if (data.token) res.status(200).send(data.token);
-			const { hospital_ID } = req.query;
-			const { id } = req.body;
+			const { hospitalID } = req.query;
 			const userToken = data.token;
-
-			if (hospital_ID) {
-				const method =
-					req.body.accessType === 'suspend'
-						? 'FHContract:suspendAccess'
-						: 'FHContract:grantAccess';
+			if (hospitalID) {
 				const { data } = await axios.post(
-					'http://localhost:8801/invoke/fasthealth-1/fasthealth',
+					'http://localhost:8801/query/fasthealth-1/fasthealth',
 					{
-						method: method,
-						args: [`${id}`, `${hospital_ID}`],
+						method: 'FHContract:getHospital',
+						args: [`${hospitalID}`],
 					},
 					{
 						headers: {
@@ -52,6 +50,7 @@ export default async function handler(
 						},
 					}
 				);
+				console.log(data);
 				res.status(200).send(data);
 			}
 		}

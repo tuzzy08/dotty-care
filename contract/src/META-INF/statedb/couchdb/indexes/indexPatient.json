@@ -1,5 +1,5 @@
 {
-	"index": { "fields": ["docType", "patientID"] },
+	"index": { "fields": ["docType", "patientID", "noteID", "recordID"] },
 	"ddoc": "indexPatientDoc",
 	"name": "indexPatient",
 	"type": "json"

@@ -20,7 +20,9 @@ import {
 	IconChevronUp,
 	IconSearch,
 } from '@tabler/icons';
-import Note, { NoteProps } from './Note';
+import Note from './Note';
+import { ParamedicNoteState } from 'state-machine';
+import { filterObject } from '../../../utils/filterObject';
 
 const useStyles = createStyles((theme) => ({
 	th: {
@@ -48,17 +50,20 @@ const useStyles = createStyles((theme) => ({
 
 interface RowData {
 	noteID: string;
-	patientID: string;
 	patientName: string;
-	paramedicID: string;
 	paramedicName: string;
-	paramedicNote: string;
-	createdAt: string;
 }
 
 interface TableSortProps {
 	data: RowData[];
 }
+
+const initialValues = {
+	recordID: '',
+	patientName: '',
+	hospitalName: '',
+	doctorName: '',
+};
 
 interface ThProps {
 	children: React.ReactNode;
@@ -119,9 +124,13 @@ function sortData(
 	);
 }
 
+interface Props {
+	list: [];
+}
+
 export default function NotesTable({ list }: any) {
-	const parsedData = list.map((item: string) => JSON.parse(item));
-	const [note, setNote] = useState<RowData | null>(null);
+	const parsedData = list.map((item: any) => filterObject(JSON.parse(item)));
+	const [note, setNote] = useState<ParamedicNoteState | undefined>();
 	console.log('data');
 
 	console.log(list);
@@ -150,11 +159,11 @@ export default function NotesTable({ list }: any) {
 		);
 	};
 
-	const rows = sortedData.map((row: NoteProps) => (
+	const rows = sortedData.map((row: ParamedicNoteState) => (
 		<tr key={row.patientName}>
 			<td>{row.patientName}</td>
 			<td>{row.paramedicName}</td>
-			<td>{row.createdAt}</td>
+			<td>{row.incidentDetails.dateofincident.slice(0, 10)}</td>
 
 			<td>
 				{
@@ -180,8 +189,13 @@ export default function NotesTable({ list }: any) {
 				padding: '10px',
 			}}
 		>
-			<Modal opened={opened} onClose={() => setOpened(false)}>
-				<Note note={note} />
+			<Modal
+				size={'70%'}
+				centered
+				opened={opened}
+				onClose={() => setOpened(false)}
+			>
+				<Note note={note!} />
 			</Modal>
 
 			<Text size={'md'} align={'center'} weight={'bold'} pb={25}>
@@ -217,7 +231,7 @@ export default function NotesTable({ list }: any) {
 							>
 								Paramedic Name
 							</Th>
-							<Th>Date Created</Th>
+							<Th>Date of Incident</Th>
 							<Th>Action</Th>
 						</tr>
 					</thead>
@@ -226,7 +240,7 @@ export default function NotesTable({ list }: any) {
 							rows
 						) : (
 							<tr>
-								<td colSpan={Object.keys(parsedData[0]).length}>
+								<td colSpan={2}>
 									<Text weight={500} align='center'>
 										Nothing found
 									</Text>

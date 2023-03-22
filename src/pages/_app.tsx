@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { AppProps } from 'next/app';
-import Head from 'next/head';
+import { StateMachineProvider, createStore } from 'little-state-machine';
 import { Hydrate, QueryClient, QueryClientProvider } from 'react-query';
 import {
 	MantineProvider,
@@ -11,7 +11,149 @@ import { NotificationsProvider } from '@mantine/notifications';
 import { createBrowserSupabaseClient } from '@supabase/auth-helpers-nextjs';
 import { SessionContextProvider, Session } from '@supabase/auth-helpers-react';
 import { AuthProvider } from '../contexts/AuthContext';
-// import { UserProvider } from '@auth0/nextjs-auth0/client';
+
+createStore({
+	paramedicNoteState: {
+		noteID: '',
+		patientName: '',
+		paramedicName: '',
+		patient_ID: '',
+		paramedicID: '',
+		paramedicEmail: '',
+		incidentDetails: {
+			servicecode: '',
+			servicetype: '',
+			dateofincident: '',
+			timeofincident: '',
+			street: '',
+			province: '',
+			postalcode: '',
+			destinationstreet: '',
+			destinationprovince: '',
+			destinationpostalcode: '',
+			responsibility: '',
+			number: '',
+			factors: '',
+			disposition: '',
+		},
+		assessmentDetails: {
+			neuroResponse: {
+				normal: '',
+				confused: '',
+				combative: '',
+				dysphasia: '',
+				hallucinations: '',
+				seizures: '',
+				lethargic: '',
+				tremors: '',
+				others: '',
+			},
+			bodyAssessment: {
+				cardiovascular: '',
+				endocrine: '',
+				centralNervousSystem: '',
+				gI: '',
+				musculoskeletal: '',
+				integumentary: '',
+				reproductive: '',
+				respiratory: '',
+				renal: '',
+			},
+			generalAssessment: {
+				gI: '',
+				musculoskeletal: '',
+				integumentary: '',
+				reproductive: '',
+				respiratory: '',
+				renal: '',
+				asthma: '',
+				cHF: '',
+				diabetes: '',
+				hypertension: '',
+				seizureDisorder: '',
+				stroke: '',
+				cancer: '',
+				cOPD: '',
+				angina: '',
+				myocardialInfraction: '',
+				renalDisease: '',
+				psychiatricIllness: '',
+				dNROrder: '',
+				other: '',
+			},
+		},
+		treatmentDetails: {
+			procedureStartTime: '',
+			procedureType: '',
+			procedureEndTime: '',
+			deviceType: '',
+			treatmentType: '',
+		},
+	},
+	recordState: {
+		recordID: '',
+		patientName: '',
+		patientID: '',
+		doctorName: '',
+		doctorID: '',
+		doctorEmail: '',
+		hospitalName: '',
+
+		assessmentDetails: {
+			neuroResponse: {
+				normal: '',
+				confused: '',
+				combative: '',
+				dysphasia: '',
+				hallucinations: '',
+				seizures: '',
+				lethargic: '',
+				tremors: '',
+				others: '',
+			},
+			bodyAssessment: {
+				cardiovascular: '',
+				endocrine: '',
+				centralNervousSystem: '',
+				gI: '',
+				musculoskeletal: '',
+				integumentary: '',
+				reproductive: '',
+				respiratory: '',
+				renal: '',
+			},
+			generalAssessment: {
+				gI: '',
+				musculoskeletal: '',
+				integumentary: '',
+				reproductive: '',
+				respiratory: '',
+				renal: '',
+				asthma: '',
+				cHF: '',
+				diabetes: '',
+				hypertension: '',
+				seizureDisorder: '',
+				stroke: '',
+				cancer: '',
+				cOPD: '',
+				angina: '',
+				myocardialInfraction: '',
+				renalDisease: '',
+				psychiatricIllness: '',
+				dNROrder: '',
+				other: '',
+			},
+		},
+		treatmentDetails: {
+			procedureStartTime: '',
+			procedureType: '',
+			procedureEndTime: '',
+			deviceType: '',
+			treatmentType: '',
+		},
+	},
+});
 
 export default function App(props: AppProps | any) {
 	const [queryClient] = useState(
@@ -41,20 +183,22 @@ export default function App(props: AppProps | any) {
 					withNormalizeCSS
 					theme={{ colorScheme }}
 				>
-					<NotificationsProvider position='top-right' zIndex={2077}>
-						<QueryClientProvider client={queryClient}>
-							<SessionContextProvider
-								supabaseClient={supabase}
-								initialSession={pageProps.initialSession}
-							>
-								<AuthProvider>
-									<Hydrate state={pageProps.dehydratedState}>
-										{getLayout(<Component {...pageProps} />)}
-									</Hydrate>
-								</AuthProvider>
-							</SessionContextProvider>
-						</QueryClientProvider>
-					</NotificationsProvider>
+					<StateMachineProvider>
+						<NotificationsProvider position='top-right' zIndex={2077}>
+							<QueryClientProvider client={queryClient}>
+								<SessionContextProvider
+									supabaseClient={supabase}
+									initialSession={pageProps.initialSession}
+								>
+									<AuthProvider>
+										<Hydrate state={pageProps.dehydratedState}>
+											{getLayout(<Component {...pageProps} />)}
+										</Hydrate>
+									</AuthProvider>
+								</SessionContextProvider>
+							</QueryClientProvider>
+						</NotificationsProvider>
+					</StateMachineProvider>
 				</MantineProvider>
 			</ColorSchemeProvider>
 			{/* </UserProvider> */}

@@ -41,39 +41,50 @@ export default function Index({ user }: PageProps) {
 	const { authToken } = useAuth();
 
 	async function getRecords(patientID: string, id: string, email?: string) {
-		const { data } = await axios.post(`/api/records/fetch/${patientID}`, {
-			token: authToken,
-			hospitalID: user.user_metadata.hospitalID,
-			id,
-			email,
-		});
-		if (data === 'denied') {
-			console.log(data);
-			showNotification({
-				title: 'Fast Health',
-				message: 'Access Denied',
-				color: 'red',
-				icon: <IconError404 />,
-				autoClose: 5000,
+		try {
+			const { data } = await axios.post(`/api/records/fetch/${patientID}`, {
+				token: authToken,
+				hospitalID: user.user_metadata.hospitalID,
+				id,
+				email,
 			});
-		} else {
-			const parsedRecords = data.map((record: string) => JSON.parse(record));
-			setRecords(parsedRecords);
+			console.log('data');
+			console.log(data);
+			if (data === 'denied') {
+				console.log(data);
+				showNotification({
+					title: 'Fast Health',
+					message: 'Access Denied',
+					color: 'red',
+					icon: <IconError404 />,
+					autoClose: 5000,
+				});
+			} else {
+				setRecords(data);
+			}
+		} catch (error) {
+			console.log(error);
 		}
-		// if(response)
 	}
 
 	const searchUser: SubmitHandler<Inputs> = async (form_data) => {
-		const { data } = await axios.post(`/api/users/${form_data.patientID}`, {
-			token: authToken,
-			id: user.user_metadata.id,
-			email: user.email,
-		});
-		data && setpatientInfo(data);
-		reset((formValues) => ({
-			...formValues,
-			patientID: '',
-		}));
+		try {
+			const { data } = await axios.post(
+				`/api/users/${form_data.patientID.trim()}`,
+				{
+					token: authToken,
+					id: user.user_metadata.id,
+					email: user.email,
+				}
+			);
+			data && setpatientInfo(data);
+			reset((formValues) => ({
+				...formValues,
+				patientID: '',
+			}));
+		} catch (error) {
+			console.log(error);
+		}
 	};
 
 	const {
@@ -111,10 +122,9 @@ export default function Index({ user }: PageProps) {
 				title='Create record'
 			>
 				<Record
-					patient_ID={`${patientInfo.patient_ID}`}
+					patientName={`${patientInfo.full_name}`}
+					patientID={`${patientInfo.patientID}`}
 					hospital={user}
-					setOpened={setOpened}
-					setpatientInfo={setpatientInfo}
 				/>
 			</Modal>
 
@@ -158,7 +168,7 @@ export default function Index({ user }: PageProps) {
 					<tbody>
 						{patientInfo ? (
 							<tr>
-								{/* <td>{patientInfo.patient_ID}</td> */}
+								{/* <td>{patientInfo.patientID}</td> */}
 								<td>{patientInfo.full_name}</td>
 								<td>{patientInfo.email}</td>
 								<td>
@@ -167,7 +177,7 @@ export default function Index({ user }: PageProps) {
 											size='xs'
 											onClick={() =>
 												getRecords(
-													patientInfo.patient_ID,
+													patientInfo.patientID,
 													user.user_metadata.id,
 													user.email
 												)

@@ -12,10 +12,18 @@ export default async function handler(
 ) {
 	if (req.method === 'POST') {
 		// Enroll Admin User
-		const { data } = await axios.post('http://localhost:8801/user/enroll', {
-			id: 'admin',
-			secret: 'adminpw',
-		});
+		const { data } = await axios.post(
+			'http://localhost:8801/user/enroll',
+			{
+				id: 'admin',
+				secret: 'adminpw',
+			}
+			// {
+			// 	headers: {
+			// 		'Content-Type': 'application/json',
+			// 	},
+			// }
+		);
 
 		const adminToken = data.token;
 
@@ -32,17 +40,17 @@ export default async function handler(
 					},
 				}
 			);
-			// console.log('usr tkn');
-			// console.log(data);
-			// if (data.token) res.status(200).send(data.token);
-			const { hospital_ID } = req.query;
+			const { user_ID } = req.query;
 			const userToken = data.token;
-			if (hospital_ID) {
+			if (user_ID) {
+				console.log('User Id');
+				console.log(user_ID);
+
 				const { data } = await axios.post(
 					'http://localhost:8801/query/fasthealth-1/fasthealth',
 					{
-						method: 'FHContract:getHospital',
-						args: [`${hospital_ID}`],
+						method: 'FHContract:QueryNotesByPatient',
+						args: [user_ID],
 					},
 					{
 						headers: {
@@ -50,8 +58,8 @@ export default async function handler(
 						},
 					}
 				);
-				console.log(data);
-				res.status(200).send(data);
+				console.log(data.response);
+				res.status(200).send(data.response);
 			}
 		}
 	}

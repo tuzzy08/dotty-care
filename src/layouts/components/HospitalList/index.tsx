@@ -47,11 +47,11 @@ const useStyles = createStyles((theme) => ({
 }));
 
 interface RowData {
-	hospital_name: string;
+	hospitalName: string;
 	// email: string;
 	// contact: string;
 	access: string;
-	hospital_ID: string;
+	hospitalID: string;
 }
 
 interface TableSortProps {
@@ -117,7 +117,7 @@ function sortData(
 	);
 }
 
-export default function HospitalList({ data, id, email }: any) {
+export default function HospitalList({ data, id, email, permissions }: any) {
 	const [opened, setOpened] = useState(false);
 	const [search, setSearch] = useState('');
 	const [hospital, setHospital] = useState<string | null>(null);
@@ -141,13 +141,17 @@ export default function HospitalList({ data, id, email }: any) {
 	};
 
 	const rows = sortedData.map((row: any) => (
-		<tr key={row.hospital_name}>
-			<td>{row.hospital_name}</td>
+		<tr key={row.hospitalName}>
+			<td>{row.hospitalName}</td>
 			{/* <td>{row.email}</td> */}
 			<td>
 				{
-					<Badge color={`${row.access === 'Granted' ? 'green' : 'red'}`}>
-						{row.access}
+					<Badge
+						color={`${
+							permissions.denied.includes(row.hospitalID) ? 'red' : 'green'
+						}`}
+					>
+						{permissions.denied.includes(row.hospitalID) ? 'Denied' : 'Granted'}
 					</Badge>
 				}
 			</td>
@@ -155,7 +159,7 @@ export default function HospitalList({ data, id, email }: any) {
 				{
 					<Button
 						onClick={() => {
-							setHospital(row.hospital_ID);
+							setHospital(row.hospitalID);
 							setOpened(true);
 						}}
 						variant='outline'
@@ -175,7 +179,7 @@ export default function HospitalList({ data, id, email }: any) {
 			}}
 		>
 			<Modal opened={opened} onClose={() => setOpened(false)}>
-				<HospitalCard hospital_ID={hospital} id={id} email={email} />
+				<HospitalCard hospitalID={hospital} id={id} email={email} />
 			</Modal>
 			<ScrollArea>
 				<Text size={'md'} align={'center'} weight={'bold'} pb={25}>
@@ -196,9 +200,9 @@ export default function HospitalList({ data, id, email }: any) {
 					<thead>
 						<tr>
 							<Th
-								sorted={sortBy === 'hospital_name'}
+								sorted={sortBy === 'hospitalName'}
 								reversed={reverseSortDirection}
-								onSort={() => setSorting('hospital_name')}
+								onSort={() => setSorting('hospitalName')}
 							>
 								Hospital
 							</Th>

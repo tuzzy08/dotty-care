@@ -14,17 +14,20 @@ NotesPage.getLayout = function getLayout(page: any) {
 export default function NotesPage({ user }: any) {
 	const { authToken } = useAuth();
 	const {
-		isLoading: isLoadingRecords,
+		isLoading: isLoadingNotes,
 		error,
 		data: notes,
 	} = useQuery(
-		'myNotes',
+		'userNotes',
 		async () => {
-			const { data } = await axios.post(`/api/notes/${user.user_metadata.id}`, {
-				token: authToken,
-				id: user.user_metadata.id,
-				email: user.email,
-			});
+			const { data } = await axios.post(
+				`/api/notes/user/${user.user_metadata.id}`,
+				{
+					token: authToken,
+					id: user.user_metadata.id,
+					email: user.email,
+				}
+			);
 			return data;
 		},
 		{
@@ -34,6 +37,8 @@ export default function NotesPage({ user }: any) {
 			cacheTime: 300000,
 		}
 	);
+	console.log('notes');
+	console.log(notes);
 
 	return (
 		<div style={{ width: '80vw' }}>
@@ -51,8 +56,8 @@ export default function NotesPage({ user }: any) {
 						<Text align='center' weight={700} transform='uppercase'>
 							My Notes
 						</Text>
-						{isLoadingRecords && <Text>Loading</Text>}
-						{notes && <NotesTable data={notes} />}
+						{isLoadingNotes ? <Text>Loading</Text> : null}
+						{notes === undefined ? null : <NotesTable list={notes} />}
 					</Stack>
 				</Center>
 			</Card>

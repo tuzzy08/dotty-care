@@ -3,7 +3,6 @@ import {
 	createStyles,
 	TextInput,
 	PasswordInput,
-	Checkbox,
 	Button,
 	Title,
 	Text,
@@ -15,8 +14,10 @@ import { useForm, SubmitHandler } from 'react-hook-form';
 import Link from 'next/link';
 import { v4 as uuidv4 } from 'uuid';
 import axios from 'axios';
+import { IconAlertTriangle } from '@tabler/icons';
 import { useAuth } from '../../../lib/auth/useAuth';
 import { useState } from 'react';
+import { showNotification } from '@mantine/notifications';
 
 type Inputs = {
 	email: string;
@@ -71,7 +72,7 @@ const useStyles = createStyles((theme) => ({
 export default function SignupForm({ setVisibleForm }: any) {
 	const [toggle, setToggle] = useState<boolean>(false);
 	const { classes } = useStyles();
-	const { setAuthToken, signUp } = useAuth();
+	const { signUp } = useAuth();
 
 	const {
 		register,
@@ -105,7 +106,7 @@ export default function SignupForm({ setVisibleForm }: any) {
 			}
 			try {
 				const res = await signUp(signupData);
-				if (res) {
+				if (res?.message === 'success') {
 					// Call api route to register user
 					const { data: token } = await axios.post('/api/auth/signup', {
 						id,
@@ -117,6 +118,14 @@ export default function SignupForm({ setVisibleForm }: any) {
 					// 	console.log(token);
 					// 	// setAuthToken(token);
 					// }
+				} else if (res?.data.user === null) {
+					showNotification({
+						title: 'Fast Health',
+						message: `${res.message}`,
+						color: 'red',
+						icon: <IconAlertTriangle />,
+						autoClose: 5000,
+					});
 				}
 			} catch (error) {
 				console.log(error);

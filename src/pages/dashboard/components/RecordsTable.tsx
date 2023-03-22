@@ -8,6 +8,8 @@ import {
 	Modal,
 } from '@mantine/core';
 import { RecordCard, RecordProps } from './RecordCard';
+import { filterObject } from '../../../utils/filterObject';
+import { RecordState } from 'state-machine';
 
 const useStyles = createStyles((theme) => ({
 	header: {
@@ -39,38 +41,34 @@ const useStyles = createStyles((theme) => ({
 interface RecordsTableProps {
 	data: {
 		recordID: string;
-		patientID: string;
-		hospitalID: string;
+		patientName: string;
 		hospitalName?: string;
 		doctorName: string;
-		doctorNote: string;
 		dateCreated?: string;
 	}[];
 }
 
 export function RecordsTable({ data }: any) {
-	const dataAsObject = data.map((item: any) => JSON.parse(item));
+	const dataAsObject = data.map((item: any) => filterObject(JSON.parse(item)));
+	console.log('parsed record');
 	console.log(dataAsObject);
-	// console.log(data.hospitalID);
 	const initialValues = {
 		recordID: '',
-		patientID: '',
-		hospitalID: '',
+		patientName: '',
 		hospitalName: '',
 		doctorName: '',
-		doctorNote: '',
-		dateCreated: '',
 	};
+
 	const { classes, cx } = useStyles();
 	const [scrolled, setScrolled] = useState(false);
 	const [opened, setOpened] = useState(false);
-	const [record, setRecord] = useState<RecordProps>(initialValues);
+	const [record, setRecord] = useState<any>(initialValues);
 
-	const rows = dataAsObject.map((row: RecordProps) => (
+	const rows = dataAsObject.map((row: any) => (
 		<tr key={row.hospitalName}>
 			<td>{row.hospitalName}</td>
 			<td>{row.doctorName}</td>
-			<td>{row.dateCreated}</td>
+			<td>{row.patientName}</td>
 			<td>
 				{
 					<Button
@@ -95,18 +93,24 @@ export function RecordsTable({ data }: any) {
 			sx={{ height: 300 }}
 			onScrollPositionChange={({ y }) => setScrolled(y !== 0)}
 		>
-			<Modal opened={opened} onClose={() => setOpened(false)} centered>
-				<RecordCard {...record} />
+			<Modal
+				size={'70%'}
+				opened={opened}
+				onClose={() => setOpened(false)}
+				centered
+				title='Patient Record'
+			>
+				<RecordCard record={record} />
 			</Modal>
 			<Text size={'md'} align={'center'} weight={'bold'} pb={25}>
-				My Records
+				Medical Records
 			</Text>
 			<Table sx={{ minWidth: 700 }}>
 				<thead className={cx(classes.header, { [classes.scrolled]: scrolled })}>
 					<tr>
 						<th>Hospital Name</th>
 						<th>Doctor Name</th>
-						<th>Date of visit</th>
+						<th>Patient Name</th>
 						<th>Action</th>
 					</tr>
 				</thead>

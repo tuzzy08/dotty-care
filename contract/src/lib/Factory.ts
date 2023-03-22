@@ -15,7 +15,7 @@ export function createParamedicNote(data): ParamedicNote {
 }
 
 export function createPatient(
-	patient_ID: string,
+	patientID: string,
 	full_name: string,
 	email: string
 ): Patient {
@@ -24,7 +24,7 @@ export function createPatient(
 	// Create patient object
 	const patient: Patient = {
 		docType: 'patient',
-		patient_ID,
+		patientID,
 		full_name,
 		email,
 		permissions,
@@ -33,17 +33,17 @@ export function createPatient(
 }
 
 export function createHospital(
-	hospital_ID: string,
-	hospital_name: string
+	hospitalID: string,
+	hospitalName: string
 ): Hospital {
-	return { docType: 'hospital', hospital_ID, hospital_name };
+	return { docType: 'hospital', hospitalID, hospitalName };
 }
 
 export function createParamedic(
-	paramedic_ID: string,
-	paramedic_name: string
+	paramedicID: string,
+	paramedicName: string
 ): Paramedic {
-	return { docType: 'paramedic', paramedic_ID, paramedic_name };
+	return { docType: 'paramedic', paramedicID, paramedicName };
 }
 
 export const Factory = {

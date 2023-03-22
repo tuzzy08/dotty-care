@@ -30,19 +30,19 @@ export class FHContract extends Contract {
 	public async initialize(ctx: Context) {
 		console.log('init called');
 		try {
-			// create composite key as hospital_id
-			const hospital_ID = `id1`;
-			// create composite key as paramedic_id
-			const paramedic_ID = `fastresp-${uuidv4()}`;
+			// create composite key as hospitalID
+			const hospitalID = `id1`;
+			// create composite key as paramedicID
+			const paramedicID = `fastresp-${uuidv4()}`;
 			// Create some Hospitals & Paramedics
 			const new_hospital = await this.createHospital(
 				ctx,
-				hospital_ID,
+				hospitalID,
 				'Acron Hospital'
 			);
 			const new_paramedic = await this.createParamedic(
 				ctx,
-				paramedic_ID,
+				paramedicID,
 				'FastResp'
 			);
 			console.log(new_hospital);
@@ -62,14 +62,14 @@ export class FHContract extends Contract {
 	@Transaction()
 	public async createPatient(
 		ctx: Context,
-		patient_ID: string,
+		patientID: string,
 		fullname: string,
 		email: string
 	): Promise<Patient> {
 		//
-		// if (!this.checkValid(patient_ID)) throw new Error('Invalid patient ID!');
-		const patient = Factory.createPatient(patient_ID, fullname, email);
-		await ctx.stub.putState(patient_ID, this.marshallObject(patient));
+		// if (!this.checkValid(patientID)) throw new Error('Invalid patient ID!');
+		const patient = Factory.createPatient(patientID, fullname, email);
+		await ctx.stub.putState(patientID, this.marshallObject(patient));
 		console.log('Patient Created');
 		console.log(patient);
 		return patient;
@@ -147,24 +147,24 @@ export class FHContract extends Contract {
 	@Transaction()
 	public async suspendAccess(
 		ctx: Context,
-		patient_ID: string,
-		hospital_ID: string
+		patientID: string,
+		hospitalID: string
 	) {
-		const hospitalAsBytes = await ctx.stub.getState(hospital_ID);
+		const hospitalAsBytes = await ctx.stub.getState(hospitalID);
 		console.log('Hospital as bytes');
 		console.log(hospitalAsBytes);
 		if (hospitalAsBytes) {
-			const patientAsBytes = await ctx.stub.getState(patient_ID);
+			const patientAsBytes = await ctx.stub.getState(patientID);
 			if (patientAsBytes) {
 				const patient: Patient = JSON.parse(patientAsBytes.toString());
 				const hospital: Hospital = JSON.parse(hospitalAsBytes.toString());
 				patient.permissions.grantAll = false;
-				patient.permissions.denied.push(hospital.hospital_ID);
+				patient.permissions.denied.push(hospital.hospitalID);
 				console.log('Patient Object');
 				console.log(patient);
-				await ctx.stub.putState(patient_ID, this.marshallObject(patient));
-				console.log(`Access Suspended for ${hospital.hospital_name}`);
-				return `Access Suspended for ${hospital.hospital_name}`;
+				await ctx.stub.putState(patientID, this.marshallObject(patient));
+				console.log(`Access Suspended for ${hospital.hospitalName}`);
+				return `Access Suspended for ${hospital.hospitalName}`;
 			}
 		}
 	}
@@ -178,27 +178,27 @@ export class FHContract extends Contract {
 	@Transaction()
 	public async grantAccess(
 		ctx: Context,
-		patient_ID: string,
-		hospital_ID: string
+		patientID: string,
+		hospitalID: string
 	) {
-		const hospitalAsBytes = await ctx.stub.getState(hospital_ID);
+		const hospitalAsBytes = await ctx.stub.getState(hospitalID);
 		if (hospitalAsBytes) {
-			const patientAsBytes = await ctx.stub.getState(patient_ID);
+			const patientAsBytes = await ctx.stub.getState(patientID);
 			if (patientAsBytes) {
 				const patient: Patient = JSON.parse(patientAsBytes.toString());
 				const hospital: Hospital = JSON.parse(hospitalAsBytes.toString());
-				const index = patient.permissions.denied.indexOf(hospital_ID);
+				const index = patient.permissions.denied.indexOf(hospitalID);
 				if (index > -1) {
 					patient.permissions.denied.splice(index, 1);
 					if (patient.permissions.denied.length < 1) {
 						patient.permissions.grantAll = true;
 					}
 					await ctx.stub.putState(
-						patient.patient_ID,
+						patient.patientID,
 						this.marshallObject(patient)
 					);
-					console.log(`Access Granted for ${hospital.hospital_name}`);
-					return `Access Granted for ${hospital.hospital_name}`;
+					console.log(`Access Granted for ${hospital.hospitalName}`);
+					return `Access Granted for ${hospital.hospitalName}`;
 				}
 			}
 		}
@@ -222,11 +222,11 @@ export class FHContract extends Contract {
 	// Only available on state databases that support rich query (e.g. CouchDB)
 	// Example: Parameterized rich query
 	@Transaction(false)
-	async QueryRecordsByPatient(ctx: Context, patient_ID: string) {
+	async QueryRecordsByPatient(ctx: Context, patientID: string) {
 		let queryString: any = {};
 		queryString.selector = {};
 		queryString.selector.docType = 'record';
-		queryString.selector.patientID = patient_ID;
+		queryString.selector.patientID = patientID;
 		return await this.GetQueryResultForQueryString(
 			ctx,
 			JSON.stringify(queryString)
@@ -234,22 +234,46 @@ export class FHContract extends Contract {
 	}
 
 	@Transaction(false)
-	async QueryNotesByPatient(ctx: Context, patient_ID: string) {
+	async QueryNotesByPatient(ctx: Context, patientID: string) {
 		let queryString: any = {};
 		queryString.selector = {};
 		queryString.selector.docType = 'note';
-		queryString.selector.patientID = patient_ID;
+		queryString.selector.patientID = patientID;
+		return await this.GetQueryResultForQueryString(
+			ctx,
+			JSON.stringify(queryString)
+		); //shim.success(queryResults);
+	}
+
+	@Transaction(false)
+	async GetNoteByID(ctx: Context, noteID: string) {
+		let queryString: any = {};
+		queryString.selector = {};
+		queryString.selector.docType = 'note';
+		queryString.selector.noteID = noteID;
+		return await this.GetQueryResultForQueryString(
+			ctx,
+			JSON.stringify(queryString)
+		); //shim.success(queryResults);
+	}
+
+	@Transaction(false)
+	async QueryNotesByHospital(ctx: Context, patientID: string) {
+		let queryString: any = {};
+		queryString.selector = {};
+		queryString.selector.docType = 'note';
+		queryString.selector.patientID = patientID;
 		return await this.GetQueryResultForQueryString(
 			ctx,
 			JSON.stringify(queryString)
 		); //shim.success(queryResults);
 	}
 	@Transaction(false)
-	async QueryNotesByParamedic(ctx: Context, paramedic_ID: string) {
+	async QueryNotesByParamedic(ctx: Context, paramedicID: string) {
 		let queryString: any = {};
 		queryString.selector = {};
 		queryString.selector.docType = 'note';
-		queryString.selector.paramedicID = paramedic_ID;
+		queryString.selector.paramedicID = paramedicID;
 		return await this.GetQueryResultForQueryString(
 			ctx,
 			JSON.stringify(queryString)
@@ -261,15 +285,15 @@ export class FHContract extends Contract {
 	@Transaction(false)
 	async getRecordsForPatient(
 		ctx: Context,
-		patient_ID: string,
-		hospital_ID: string
+		patientID: string,
+		hospitalID: string
 	) {
-		const patient = await this.getPatient(ctx, patient_ID);
+		const patient = await this.getPatient(ctx, patientID);
 		if (patient) {
 			const { permissions } = patient;
-			const records = await this.QueryRecordsByPatient(ctx, patient_ID);
+			const records = await this.QueryRecordsByPatient(ctx, patientID);
 			if (!permissions.grantAll) {
-				if (permissions.denied.includes(hospital_ID)) {
+				if (permissions.denied.includes(hospitalID)) {
 					return {
 						status: 'denied',
 						message: `Access Denied!`,
@@ -281,28 +305,28 @@ export class FHContract extends Contract {
 	}
 
 	@Transaction(false)
-	async getPatient(ctx: Context, patient_ID: string): Promise<Patient> {
-		const patientAsBytes = await ctx.stub.getState(patient_ID);
+	async getPatient(ctx: Context, patientID: string): Promise<Patient> {
+		const patientAsBytes = await ctx.stub.getState(patientID);
 		if (!patientAsBytes || patientAsBytes.length === 0) {
-			throw new Error(`Patient with ID ${patient_ID} does not exist`);
+			throw new Error(`Patient with ID ${patientID} does not exist`);
 		}
 		return JSON.parse(patientAsBytes.toString());
 	}
 
 	@Transaction(false)
-	async getHospital(ctx: Context, hospital_ID: string) {
-		const hospitalAsBytes = await ctx.stub.getState(hospital_ID);
+	async getHospital(ctx: Context, hospitalID: string) {
+		const hospitalAsBytes = await ctx.stub.getState(hospitalID);
 		if (!hospitalAsBytes || hospitalAsBytes.length === 0) {
-			throw new Error(`Hospital with ID ${hospital_ID} does not exist`);
+			throw new Error(`Hospital with ID ${hospitalID} does not exist`);
 		}
 		return JSON.parse(hospitalAsBytes.toString());
 	}
 
 	@Transaction(false)
-	async getParamedic(ctx: Context, paramedic_ID: string) {
-		const paramedicAsBytes = await ctx.stub.getState(paramedic_ID);
+	async getParamedic(ctx: Context, paramedicID: string) {
+		const paramedicAsBytes = await ctx.stub.getState(paramedicID);
 		if (!paramedicAsBytes || paramedicAsBytes.length === 0) {
-			throw new Error(`Paramedic with ID ${paramedic_ID} does not exist`);
+			throw new Error(`Paramedic with ID ${paramedicID} does not exist`);
 		}
 		return JSON.parse(paramedicAsBytes.toString());
 	}

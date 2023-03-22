@@ -8,6 +8,7 @@ import { Layout } from '../../../layouts';
 import ProfileCard from '../../../layouts/components/ProfileCard';
 import HospitalList from '../../../layouts/components/HospitalList';
 import { useAuth } from '../../../lib/auth';
+import { useState } from 'react';
 
 HospitalsPage.getLayout = function getLayout(page: any) {
 	return <Layout variant={'patient'}>{page}</Layout>;
@@ -15,6 +16,7 @@ HospitalsPage.getLayout = function getLayout(page: any) {
 
 export default function HospitalsPage({ user }: PageProps) {
 	const { authToken } = useAuth();
+	const [permissions, setPermissions] = useState();
 	let dataAsObjects;
 	// if (authToken) {
 	const { isLoading, error, data } = useQuery(
@@ -31,13 +33,31 @@ export default function HospitalsPage({ user }: PageProps) {
 			enabled: !!authToken,
 			refetchOnMount: true,
 			refetchOnWindowFocus: false,
-			cacheTime: 900000,
+			// cacheTime: 900000,
 		}
 	);
 
 	if (data) {
 		dataAsObjects = data.response.map((item: string) => JSON.parse(item));
 	}
+
+	const { data: res } = useQuery(
+		'userObject',
+		async () => {
+			const { data } = await axios.post(`/api/users/${user.user_metadata.id}`, {
+				token: authToken,
+				id: user.user_metadata.id,
+				email: user.email,
+			});
+
+			return data;
+		},
+		{
+			enabled: !!authToken,
+			refetchOnMount: true,
+			refetchOnWindowFocus: false,
+		}
+	);
 
 	// }
 
@@ -52,13 +72,14 @@ export default function HospitalsPage({ user }: PageProps) {
 				/>
 				{/* <HospitalList data={data} /> */}
 				{isLoading && <Text>Loading</Text>}
-				{dataAsObjects && (
+				{dataAsObjects && res ? (
 					<HospitalList
 						data={dataAsObjects}
 						id={`${user.user_metadata.id}`}
 						email={user.email}
+						permissions={res.permissions}
 					/>
-				)}
+				) : null}
 			</Group>
 		</Container>
 	);

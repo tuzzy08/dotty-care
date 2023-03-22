@@ -62,7 +62,7 @@ const mockdata = [
 	// { label: 'Electric', icon: IconGasStation },
 ];
 
-export default function HospitalCard({ hospital_ID, id, email }: any) {
+export default function HospitalCard({ hospitalID, id, email }: any) {
 	const { classes } = useStyles();
 	const { authToken, permissions, setPermissions } = useAuth();
 	const [checked, setChecked] = useState(true);
@@ -73,7 +73,7 @@ export default function HospitalCard({ hospital_ID, id, email }: any) {
 		</Center>
 	));
 	console.log('hsp id');
-	console.log(hospital_ID);
+	console.log(hospitalID);
 
 	console.log('patient id');
 	console.log(id);
@@ -82,7 +82,7 @@ export default function HospitalCard({ hospital_ID, id, email }: any) {
 	console.log(permissions);
 
 	async function changeAccess(id: string, accessType: string) {
-		await axios.post(`/api/hospitals/access/${hospital_ID}`, {
+		await axios.post(`/api/hospitals/access/${hospitalID}`, {
 			token: authToken,
 			id,
 			email,
@@ -100,8 +100,8 @@ export default function HospitalCard({ hospital_ID, id, email }: any) {
 	}
 
 	// if (authToken) {
-	const { isLoading, error, data } = useQuery(`${hospital_ID}`, async () => {
-		const { data } = await axios.post(`/api/hospitals/${hospital_ID}`, {
+	const { isLoading, error, data } = useQuery(`${hospitalID}`, async () => {
+		const { data } = await axios.post(`/api/hospitals/${hospitalID}`, {
 			token: authToken,
 			id,
 			email,
@@ -120,7 +120,7 @@ export default function HospitalCard({ hospital_ID, id, email }: any) {
 					<Group position='apart' mt='md'>
 						<div>
 							<Text weight={500} transform='uppercase'>
-								{`${data.response.hospital_name}`}
+								{`${data.response.hospitalName}`}
 							</Text>
 							{/* <Text size="xs" color="dimmed">
             Free recharge at any station
@@ -128,9 +128,9 @@ export default function HospitalCard({ hospital_ID, id, email }: any) {
 						</div>
 						<Badge
 							variant='light'
-							color={permissions.denied.includes(hospital_ID) ? 'red' : 'green'}
+							color={permissions.denied.includes(hospitalID) ? 'red' : 'green'}
 						>
-							{permissions.denied.includes(hospital_ID)
+							{permissions.denied.includes(hospitalID)
 								? 'Access Denied'
 								: 'Access Granted'}
 						</Badge>
@@ -164,10 +164,10 @@ export default function HospitalCard({ hospital_ID, id, email }: any) {
 								// label="Grant/Revoke"
 								color='lime'
 								checked={
-									permissions.denied.includes(hospital_ID) ? false : checked
+									permissions.denied.includes(hospitalID) ? false : checked
 								}
 								onChange={(event) => {
-									const accessType = permissions.denied.includes(hospital_ID)
+									const accessType = permissions.denied.includes(hospitalID)
 										? 'grant'
 										: 'suspend';
 									setChecked(event.currentTarget.checked);

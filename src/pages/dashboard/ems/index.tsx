@@ -40,17 +40,24 @@ export default function Index({ user }: PageProps) {
 	const [patientInfo, setpatientInfo] = useState<any>('');
 	const { authToken } = useAuth();
 
-	const handleSignup: SubmitHandler<Inputs> = async (form_data) => {
-		const { data } = await axios.post(`/api/users/${form_data.patientID}`, {
-			token: authToken,
-			id: user.user_metadata.id,
-			email: user.email,
-		});
-		data && setpatientInfo(data);
-		reset((formValues) => ({
-			...formValues,
-			patientID: '',
-		}));
+	const handleSearch: SubmitHandler<Inputs> = async (form_data) => {
+		try {
+			const { data } = await axios.post(
+				`/api/users/${form_data.patientID.trim()}`,
+				{
+					token: authToken,
+					id: user.user_metadata.id,
+					email: user.email,
+				}
+			);
+			data ? setpatientInfo(data) : null;
+			reset((formValues) => ({
+				...formValues,
+				patientID: '',
+			}));
+		} catch (error) {
+			console.log(error);
+		}
 	};
 
 	const {
@@ -73,7 +80,7 @@ export default function Index({ user }: PageProps) {
 		<Stack spacing={'xl'}>
 			<Modal
 				opened={opened}
-				size='lg'
+				size='70%'
 				closeButtonLabel='Close Note'
 				closeOnEscape={false}
 				closeOnClickOutside={false}
@@ -88,7 +95,7 @@ export default function Index({ user }: PageProps) {
 				title='Create new note'
 			>
 				<ParamedicNote
-					patient_ID={`${patientInfo.patient_ID}`}
+					patientID={`${patientInfo.patientID}`}
 					patientName={`${patientInfo.full_name}`}
 					paramedic={user}
 					setOpened={setOpened}
@@ -114,7 +121,7 @@ export default function Index({ user }: PageProps) {
 						{`ID: ${user.user_metadata.id}`}
 					</Badge>
 				</Group>
-				<form onSubmit={handleSubmit(handleSignup)}>
+				<form onSubmit={handleSubmit(handleSearch)}>
 					<Stack align='flex-start'>
 						<TextInput
 							label='Enter patient ID'
@@ -136,7 +143,7 @@ export default function Index({ user }: PageProps) {
 					<tbody>
 						{patientInfo ? (
 							<tr>
-								<td>{patientInfo.patient_ID}</td>
+								<td>{patientInfo.patientID}</td>
 								<td>{patientInfo.full_name}</td>
 								{/* <td></td> */}
 								<td>

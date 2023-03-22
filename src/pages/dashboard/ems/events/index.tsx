@@ -16,10 +16,13 @@ export default function EventsList({ user }: PageProps) {
 	const { isLoading, error, data } = useQuery(
 		'myNotes',
 		async () => {
-			const { data } = await axios.post(`/api/notes/${user.user_metadata.id}`, {
-				id: user.user_metadata.id,
-				email: user.email,
-			});
+			const { data } = await axios.post(
+				`/api/notes/ems/${user.user_metadata.id}`,
+				{
+					id: user.user_metadata.id,
+					email: user.email,
+				}
+			);
 			return data;
 		},
 		{
