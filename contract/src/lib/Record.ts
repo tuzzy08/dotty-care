@@ -9,7 +9,6 @@ export class Record {
 	doctorID: string = '';
 	doctorEmail: string = '';
 	hospitalName: string;
-	hospitalID: string;
 
 	assessmentDetails: {
 		neuroResponse: {
@@ -63,5 +62,11 @@ export class Record {
 		procedureEndTime: string;
 		deviceType: string;
 		treatmentType: string;
+	};
+	incidentDetails: {
+		patientName: string;
+		servicetype: string;
+		dateofincident: string;
+		timeofincident: string;
 	};
 }
