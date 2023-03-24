@@ -69,3 +69,18 @@ export type AssessmentInput = {
 	dNROrder: string;
 	other: string;
 };
+
+export interface SignupData {
+	email: string;
+	password: string;
+	options: {
+		data: {
+			id: string;
+			accountType: string;
+			name: string;
+			mobile: string;
+			hospitalName?: string;
+			hospitalID?: string;
+		};
+	};
+}

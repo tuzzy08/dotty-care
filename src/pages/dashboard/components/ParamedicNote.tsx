@@ -2,31 +2,31 @@ import { Text, Button, Space, Stepper, Group, Stack } from '@mantine/core';
 import { useStateMachine } from 'little-state-machine';
 import { showNotification } from '@mantine/notifications';
 import { IconCheck } from '@tabler/icons';
-import axios from 'axios';
 import { useState, useEffect } from 'react';
-import { v4 as uuidv4 } from 'uuid';
 import { useForm } from '@mantine/form';
 import { updateState } from '../../../utils/updateParamedicNoteState';
-
+import { useNote } from '../../../domain/useCases/noteUseCase';
 import { AssessmentForm, IncidentForm, TreatmentForm } from './forms';
 import { ParamedicNoteState } from 'state-machine';
+import { CreateNoteProps } from '../../../domain/useCases/types';
 
 export default function ParamedicNote({
 	patientID,
 	paramedic,
 	patientName,
 }: any) {
+	// Create form objects
 	const formOne = useForm();
 	const formTwo = useForm();
 	const formThree = useForm();
-
+	// Initialize form value
 	useEffect(() => {
 		formOne.setValues({ patientID });
 	}, []);
 	const [active, setActive] = useState(0);
-
 	const [highestStepVisited, setHighestStepVisited] = useState(active);
 	const { actions, state } = useStateMachine({ updateState });
+	const { createParamedicNote } = useNote();
 
 	const handleStepChange = (nextStep: number) => {
 		const isOutOfBounds = nextStep > 3 || nextStep < 0;
@@ -115,13 +115,15 @@ export default function ParamedicNote({
 		console.log('passed in state');
 		console.log(state);
 		try {
-			const noteID = `${uuidv4()}`;
-			state.noteID = noteID;
-			state.paramedicID = paramedic.user_metadata.id;
-			state.paramedicEmail = paramedic.email;
-			state.patientName = patientName;
-			const { data } = await axios.post('/api/notes/create', state);
-			// console.log(state)
+			const payload: CreateNoteProps = {
+				paramedicID: paramedic.user_metadata.id,
+				paramedicEmail: paramedic.email,
+				patientName: patientName,
+				noteData: state,
+			};
+			const data = await createParamedicNote(payload);
+			console.log('Updated Note');
+			console.log(data);
 			if (data) {
 				showNotification({
 					title: 'Fast Health',
