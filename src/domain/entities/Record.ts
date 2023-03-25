@@ -1,26 +1,12 @@
-export type ParamedicNote = {
-	noteID: string;
+export type RecordState = {
+	recordID: string;
 	patientName: string;
-	paramedicName: string;
 	patientID: string;
-	paramedicID: string;
-	paramedicEmail: string;
-	incidentDetails: {
-		servicecode: string;
-		servicetype: string;
-		dateofincident: string;
-		timeofincident: string;
-		street: string;
-		province: string;
-		postalcode: string;
-		destinationstreet: string;
-		destinationprovince: string;
-		destinationpostalcode: string;
-		responsibility: string;
-		number: string;
-		factors: string;
-		disposition: string;
-	};
+	doctorName: string;
+	doctorID: string;
+	doctorEmail: string;
+	hospitalName: string;
+
 	assessmentDetails: {
 		neuroResponse: {
 			normal: string;
@@ -73,5 +59,11 @@ export type ParamedicNote = {
 		procedureEndTime: string;
 		deviceType: string;
 		treatmentType: string;
+	};
+	incidentDetails: {
+		patientName: string;
+		servicetype: string;
+		dateofincident: string;
+		timeofincident: string;
 	};
 };
