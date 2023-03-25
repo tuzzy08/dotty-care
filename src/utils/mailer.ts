@@ -1,8 +1,8 @@
 import Email from 'email-templates';
 import path from 'path';
 
-export class EmailConsumerService {
-	mailer = new Email({
+export class Mailer {
+	static mailer = new Email({
 		message: {
 			from: process.env.SUPPORT_EMAIL,
 		},
@@ -18,11 +18,17 @@ export class EmailConsumerService {
 		},
 	});
 
-	async sendMailtoDoctor({ noteID, email }: { noteID: string; email: string }) {
+	static async sendMailtoDoctor({
+		noteID,
+		email,
+	}: {
+		noteID: string;
+		email: string;
+	}) {
 		if (!noteID || !email) return;
 
 		try {
-			const response = await this.mailer.send({
+			const response = await Mailer.mailer.send({
 				template: path.join(process.cwd(), 'email', 'note'),
 				message: {
 					subject: 'FastHealth - Emergency! Patient en route.',
