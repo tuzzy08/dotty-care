@@ -355,6 +355,51 @@ export class FHContract extends Contract {
 			JSON.stringify(queryString)
 		);
 	}
+
+	@Transaction(false)
+	async getAllRecords(ctx: Context) {
+		let queryString: any = {};
+		queryString.selector = {};
+		queryString.selector.docType = 'record';
+		return await this.GetQueryResultForQueryString(
+			ctx,
+			JSON.stringify(queryString)
+		);
+	}
+
+	@Transaction(false)
+	async getAllNotes(ctx: Context) {
+		let queryString: any = {};
+		queryString.selector = {};
+		queryString.selector.docType = 'note';
+		return await this.GetQueryResultForQueryString(
+			ctx,
+			JSON.stringify(queryString)
+		);
+	}
+
+	@Transaction(false)
+	async getAllPatients(ctx: Context) {
+		let queryString: any = {};
+		queryString.selector = {};
+		queryString.selector.docType = 'patient';
+		return await this.GetQueryResultForQueryString(
+			ctx,
+			JSON.stringify(queryString)
+		);
+	}
+
+	@Transaction(false)
+	async getAllParamedics(ctx: Context) {
+		let queryString: any = {};
+		queryString.selector = {};
+		queryString.selector.docType = 'paramedic';
+		return await this.GetQueryResultForQueryString(
+			ctx,
+			JSON.stringify(queryString)
+		);
+	}
+
 	// Query string matching state database syntax is passed in and executed as is.
 	// Supports ad hoc queries that can be defined at runtime by the client.
 	@Transaction(false)
